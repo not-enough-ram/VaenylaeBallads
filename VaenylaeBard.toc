@@ -1,0 +1,9 @@
+## Interface: 11307
+## Title: Vaenylae Bard
+## Notes: Song and emote manager for roleplay performances
+## Author: Vaenylae
+## Version: 1.0
+## SavedVariables: VaenylaeBardDB
+
+VaenylaeBard.xml
+VaenylaeBard.lua
