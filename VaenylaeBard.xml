@@ -29,50 +29,6 @@
             </Anchors>
         </FontString>
         
-        <!-- Close Button -->
-        <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-            <Anchors>
-                <Anchor point="TOPRIGHT" x="-5" y="-5"/>
-            </Anchors>
-        </Button>
-        
-        <!-- Song List Area -->
-        <ScrollFrame name="$parentSongScroll" inherits="UIPanelScrollFrameTemplate">
-            <Size>
-                <AbsDimension x="300" y="280"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-45"/>
-            </Anchors>
-            <ScrollChild>
-                <Frame name="VaenylaeBardSongList">
-                    <Size>
-                        <AbsDimension x="300" y="280"/>
-                    </Size>
-                </Frame>
-            </ScrollChild>
-        </ScrollFrame>
-        
-        <!-- Add Song Button -->
-        <Button name="$parentAddSongButton" inherits="UIPanelButtonTemplate" text="Add Song">
-            <Size>
-                <AbsDimension x="100" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOMLEFT" x="20" y="45"/>
-            </Anchors>
-        </Button>
-        
-        <!-- Remove Song Button -->
-        <Button name="$parentRemoveSongButton" inherits="UIPanelButtonTemplate" text="Remove Song">
-            <Size>
-                <AbsDimension x="100" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOMRIGHT" x="-20" y="45"/>
-            </Anchors>
-        </Button>
-        
         <!-- Instructions -->
         <FontString inherits="GameFontNormal" text="Click a song to edit its lines">
             <Anchors>
@@ -122,13 +78,6 @@
             </Anchors>
         </FontString>
         
-        <!-- Close Button -->
-        <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-            <Anchors>
-                <Anchor point="TOPRIGHT" x="-5" y="-5"/>
-            </Anchors>
-        </Button>
-        
         <!-- Line List Area -->
         <Frame name="VaenylaeBardLineList">
             <Size>
@@ -146,34 +95,12 @@
             </Anchors>
         </FontString>
         
-        <!-- Line Text Input -->
-        <EditBox name="VaenylaeBardLineTextBox" inherits="InputBoxTemplate" autoFocus="false">
-            <Size>
-                <AbsDimension x="280" y="32"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-200"/>
-            </Anchors>
-            <FontString inherits="ChatFontNormal"/>
-        </EditBox>
-        
         <!-- Emote Label -->
         <FontString inherits="GameFontNormal" text="Emote:">
             <Anchors>
                 <Anchor point="TOPLEFT" x="20" y="-240"/>
             </Anchors>
         </FontString>
-        
-        <!-- Emote Input -->
-        <EditBox name="VaenylaeBardLineEmoteBox" inherits="InputBoxTemplate" autoFocus="false">
-            <Size>
-                <AbsDimension x="280" y="32"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-260"/>
-            </Anchors>
-            <FontString inherits="ChatFontNormal"/>
-        </EditBox>
         
         <!-- Delay Label -->
         <FontString inherits="GameFontNormal" text="Delay (seconds):">
@@ -182,22 +109,6 @@
             </Anchors>
         </FontString>
         
-        <!-- Delay Input -->
-        <EditBox name="VaenylaeBardLineDelayBox" inherits="InputBoxTemplate" autoFocus="false">
-            <Size>
-                <AbsDimension x="100" y="32"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-320"/>
-            </Anchors>
-            <FontString inherits="ChatFontNormal"/>
-            <Scripts>
-                <OnLoad>
-                    this:SetText("3");
-                </OnLoad>
-            </Scripts>
-        </EditBox>
-        
         <!-- Save Line Button -->
         <Button name="VaenylaeBardSaveLineButton" inherits="UIPanelButtonTemplate" text="Save Line">
             <Size>
@@ -205,44 +116,6 @@
             </Size>
             <Anchors>
                 <Anchor point="BOTTOM" x="-65" y="20"/>
-            </Anchors>
-        </Button>
-        
-        <!-- Add New Line Button -->
-        <Button name="$parentAddLineButton" inherits="UIPanelButtonTemplate" text="Add New Line">
-            <Size>
-                <AbsDimension x="120" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOM" x="65" y="20"/>
-            </Anchors>
-        </Button>
-        
-        <!-- Line Management Buttons -->
-        <Button name="$parentUpButton" inherits="UIPanelButtonTemplate" text="Up">
-            <Size>
-                <AbsDimension x="50" y="20"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOPLEFT" x="20" y="-190"/>
-            </Anchors>
-        </Button>
-        
-        <Button name="$parentDownButton" inherits="UIPanelButtonTemplate" text="Down">
-            <Size>
-                <AbsDimension x="50" y="20"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOPLEFT" x="80" y="-190"/>
-            </Anchors>
-        </Button>
-        
-        <Button name="$parentDeleteButton" inherits="UIPanelButtonTemplate" text="Del">
-            <Size>
-                <AbsDimension x="50" y="20"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOPLEFT" x="140" y="-190"/>
             </Anchors>
         </Button>
         
@@ -294,37 +167,6 @@
                 <Anchor point="TOP" y="-45"/>
             </Anchors>
         </FontString>
-        
-        <!-- Song Name Input -->
-        <EditBox name="VaenylaeBardAddSongEditBox" inherits="InputBoxTemplate" autoFocus="false">
-            <Size>
-                <AbsDimension x="250" y="32"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-70"/>
-            </Anchors>
-            <FontString inherits="ChatFontNormal"/>
-        </EditBox>
-        
-        <!-- Add Button -->
-        <Button name="$parentAddButton" inherits="UIPanelButtonTemplate" text="Add">
-            <Size>
-                <AbsDimension x="80" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOM" x="-45" y="15"/>
-            </Anchors>
-        </Button>
-        
-        <!-- Cancel Button -->
-        <Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="Cancel">
-            <Size>
-                <AbsDimension x="80" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOM" x="45" y="15"/>
-            </Anchors>
-        </Button>
         
         <Scripts>
             <OnLoad>
