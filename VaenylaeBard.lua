@@ -16,11 +16,54 @@ local function InitializeAddon()
     end
     VaenylaeBardSongs = VaenylaeBardDB.songs
     
-    -- Setup button handlers
+    -- Create buttons first
+    CreateMainFrameButtons()
+    
+    -- Then setup event handlers
     SetupEventHandlers()
     
     -- Update song list
     UpdateSongList()
+end
+
+local function DiagnoseFrames()
+    local frames = {
+        "VaenylaeBardMainFrame",
+        "VaenylaeBardMainFrameAddSongButton", 
+        "VaenylaeBardMainFrameRemoveSongButton",
+        "VaenylaeBardMainFrameCloseButton"
+    }
+    
+    for _, frameName in ipairs(frames) do
+        local frame = getglobal(frameName)
+        if frame then
+            print(frameName .. ": EXISTS, Visible=" .. tostring(frame:IsVisible()))
+        else
+            print(frameName .. ": NIL - NOT LOADED")
+        end
+    end
+end
+
+local function CreateMainFrameButtons()
+    -- Create Add Song Button
+    local addButton = CreateFrame("Button", "VaenylaeBardMainFrameAddSongButton", VaenylaeBardMainFrame, "UIPanelButtonTemplate")
+    addButton:SetSize(100, 25)
+    addButton:SetPoint("BOTTOMLEFT", VaenylaeBardMainFrame, "BOTTOMLEFT", 20, 45)
+    addButton:SetText("Add Song")
+    
+    -- Create Remove Song Button  
+    local removeButton = CreateFrame("Button", "VaenylaeBardMainFrameRemoveSongButton", VaenylaeBardMainFrame, "UIPanelButtonTemplate")
+    removeButton:SetSize(100, 25)
+    removeButton:SetPoint("BOTTOMRIGHT", VaenylaeBardMainFrame, "BOTTOMRIGHT", -20, 45)
+    removeButton:SetText("Remove Song")
+    
+    -- Create Close Button (if it doesn't exist)
+    if not VaenylaeBardMainFrameCloseButton then
+        local closeButton = CreateFrame("Button", "VaenylaeBardMainFrameCloseButton", VaenylaeBardMainFrame, "UIPanelCloseButton")
+        closeButton:SetPoint("TOPRIGHT", VaenylaeBardMainFrame, "TOPRIGHT", -5, -5)
+    end
+    
+    print("Buttons created successfully!")
 end
 
 -- Setup event handlers for XML-defined buttons
@@ -287,6 +330,7 @@ end)
 SLASH_VBARD1 = "/vbard"
 SLASH_VBARD2 = "/vaenylaebard"
 SlashCmdList["VBARD"] = function(msg)
+    DiagnoseFrames()
     if msg == "debug" then
         print("=== VaenylaeBard Debug Info ===")
         local count = 0
