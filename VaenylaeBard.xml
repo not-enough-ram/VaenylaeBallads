@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
     <!-- Main Bard Manager Frame -->
-    <Frame name="VaenylaeBardMainFrame" movable="true" enableMouse="true" hidden="true" frameStrata="MEDIUM">
+    <Frame name="VaenylaeBardMainFrame" movable="true" enableMouse="true" hidden="true" frameStrata="MEDIUM" toplevel="true">
         <Size>
-            <AbsDimension x="350" y="400"/>
+            <AbsDimension x="400" y="450"/>
         </Size>
         <Anchors>
             <Anchor point="CENTER"/>
@@ -22,20 +22,6 @@
             </BackgroundInsets>
         </Backdrop>
         
-        <!-- Title -->
-        <FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Vaenylae Bard Manager">
-            <Anchors>
-                <Anchor point="TOP" y="-15"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Instructions -->
-        <FontString inherits="GameFontNormal" text="Click a song to edit its lines">
-            <Anchors>
-                <Anchor point="BOTTOM" y="20"/>
-            </Anchors>
-        </FontString>
-        
         <Scripts>
             <OnLoad>
                 this:RegisterForDrag("LeftButton");
@@ -48,14 +34,88 @@
             </OnDragStop>
         </Scripts>
     </Frame>
+
+    <!-- Main Frame Title -->
+    <FontString name="VaenylaeBardMainFrameTitle" parent="VaenylaeBardMainFrame" inherits="GameFontNormalLarge" text="Vaenylae Bard Manager">
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrame" relativePoint="TOP" x="0" y="-20"/>
+        </Anchors>
+    </FontString>
+    
+    <!-- Main Frame Close Button -->
+    <Button name="VaenylaeBardMainFrameCloseButton" parent="VaenylaeBardMainFrame" inherits="UIPanelCloseButton">
+        <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="VaenylaeBardMainFrame" relativePoint="TOPRIGHT" x="-8" y="-8"/>
+        </Anchors>
+    </Button>
+    
+    <!-- Song List Container (Simple Frame instead of ScrollFrame) -->
+    <Frame name="VaenylaeBardMainFrameSongList" parent="VaenylaeBardMainFrame">
+        <Size>
+            <AbsDimension x="350" y="300"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrame" relativePoint="TOP" x="0" y="-50"/>
+        </Anchors>
+        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" 
+                 edgeFile="Interface\Tooltips\UI-Tooltip-Border" 
+                 tile="true">
+            <EdgeSize>
+                <AbsValue val="16"/>
+            </EdgeSize>
+            <TileSize>
+                <AbsValue val="16"/>
+            </TileSize>
+            <BackgroundInsets>
+                <AbsInset left="4" right="4" top="4" bottom="4"/>
+            </BackgroundInsets>
+        </Backdrop>
+    </Frame>
+    
+    <!-- Main Frame Instructions -->
+    <FontString name="VaenylaeBardMainFrameInstructions" parent="VaenylaeBardMainFrame" inherits="GameFontNormal" text="Click a song to edit its lines. Use buttons below to manage songs.">
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrameSongList" relativePoint="BOTTOM" x="0" y="-10"/>
+        </Anchors>
+    </FontString>
+    
+    <!-- Add Song Button -->
+    <Button name="VaenylaeBardMainFrameAddSongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Add Song">
+        <Size>
+            <AbsDimension x="100" y="25"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOMLEFT" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOMLEFT" x="30" y="20"/>
+        </Anchors>
+    </Button>
+    
+    <!-- Remove Song Button -->
+    <Button name="VaenylaeBardMainFrameRemoveSongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Remove Song">
+        <Size>
+            <AbsDimension x="100" y="25"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOM" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOM" x="0" y="20"/>
+        </Anchors>
+    </Button>
+    
+    <!-- Play Song Button -->
+    <Button name="VaenylaeBardMainFramePlaySongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Play Song">
+        <Size>
+            <AbsDimension x="100" y="25"/>
+        </Size>
+        <Anchors>
+            <Anchor point="BOTTOMRIGHT" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOMRIGHT" x="-30" y="20"/>
+        </Anchors>
+    </Button>
 
     <!-- Line Editor Frame -->
-    <Frame name="VaenylaeBardLineEditorFrame" movable="true" enableMouse="true" hidden="true" frameStrata="HIGH">
+    <Frame name="VaenylaeBardLineEditorFrame" movable="true" enableMouse="true" hidden="true" frameStrata="HIGH" toplevel="true">
         <Size>
-            <AbsDimension x="350" y="400"/>
+            <AbsDimension x="450" y="500"/>
         </Size>
         <Anchors>
-            <Anchor point="CENTER" x="200" y="0"/>
+            <Anchor point="CENTER" x="250" y="0"/>
         </Anchors>
         <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
                  edgeFile="Interface\DialogFrame\UI-DialogBox-Border" 
@@ -71,54 +131,6 @@
             </BackgroundInsets>
         </Backdrop>
         
-        <!-- Title -->
-        <FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Song Line Editor">
-            <Anchors>
-                <Anchor point="TOP" y="-15"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Line List Area -->
-        <Frame name="VaenylaeBardLineList">
-            <Size>
-                <AbsDimension x="300" y="120"/>
-            </Size>
-            <Anchors>
-                <Anchor point="TOP" y="-50"/>
-            </Anchors>
-        </Frame>
-        
-        <!-- Line Text Label -->
-        <FontString inherits="GameFontNormal" text="Line Text:">
-            <Anchors>
-                <Anchor point="TOPLEFT" x="20" y="-180"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Emote Label -->
-        <FontString inherits="GameFontNormal" text="Emote:">
-            <Anchors>
-                <Anchor point="TOPLEFT" x="20" y="-240"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Delay Label -->
-        <FontString inherits="GameFontNormal" text="Delay (seconds):">
-            <Anchors>
-                <Anchor point="TOPLEFT" x="20" y="-300"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Save Line Button -->
-        <Button name="VaenylaeBardSaveLineButton" inherits="UIPanelButtonTemplate" text="Save Line">
-            <Size>
-                <AbsDimension x="120" y="25"/>
-            </Size>
-            <Anchors>
-                <Anchor point="BOTTOM" x="-65" y="20"/>
-            </Anchors>
-        </Button>
-        
         <Scripts>
             <OnLoad>
                 this:RegisterForDrag("LeftButton");
@@ -131,54 +143,147 @@
             </OnDragStop>
         </Scripts>
     </Frame>
-
-    <!-- Add Song Dialog -->
-    <Frame name="VaenylaeBardAddSongDialog" movable="true" enableMouse="true" hidden="true" frameStrata="TOOLTIP">
+    
+    <!-- Line Editor Title -->
+    <FontString name="VaenylaeBardLineEditorFrameTitle" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormalLarge" text="Song Line Editor">
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOP" x="0" y="-20"/>
+        </Anchors>
+    </FontString>
+    
+    <!-- Line Editor Close Button -->
+    <Button name="VaenylaeBardLineEditorFrameCloseButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelCloseButton">
+        <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOPRIGHT" x="-8" y="-8"/>
+        </Anchors>
+    </Button>
+    
+    <!-- Line List Container (Simple Frame) -->
+    <Frame name="VaenylaeBardLineEditorFrameLineList" parent="VaenylaeBardLineEditorFrame">
         <Size>
-            <AbsDimension x="300" y="150"/>
+            <AbsDimension x="400" y="180"/>
         </Size>
         <Anchors>
-            <Anchor point="CENTER"/>
+            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOP" x="0" y="-50"/>
         </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
-                 edgeFile="Interface\DialogFrame\UI-DialogBox-Border" 
+        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" 
+                 edgeFile="Interface\Tooltips\UI-Tooltip-Border" 
                  tile="true">
             <EdgeSize>
-                <AbsValue val="32"/>
+                <AbsValue val="16"/>
             </EdgeSize>
             <TileSize>
-                <AbsValue val="32"/>
+                <AbsValue val="16"/>
             </TileSize>
             <BackgroundInsets>
-                <AbsInset left="11" right="12" top="12" bottom="11"/>
+                <AbsInset left="4" right="4" top="4" bottom="4"/>
             </BackgroundInsets>
         </Backdrop>
-        
-        <!-- Title -->
-        <FontString inherits="GameFontNormalLarge" text="Add Song">
-            <Anchors>
-                <Anchor point="TOP" y="-15"/>
-            </Anchors>
-        </FontString>
-        
-        <!-- Label -->
-        <FontString inherits="GameFontNormal" text="Enter song name:">
-            <Anchors>
-                <Anchor point="TOP" y="-45"/>
-            </Anchors>
-        </FontString>
-        
+    </Frame>
+    
+    <!-- Line Management Buttons -->
+    <Button name="VaenylaeBardLineEditorFrameUpButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Move Up">
+        <Size>
+            <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameLineList" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
+        </Anchors>
+    </Button>
+    
+    <Button name="VaenylaeBardLineEditorFrameDownButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Move Down">
+        <Size>
+            <AbsDimension x="80" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameUpButton" relativePoint="RIGHT" x="5" y="0"/>
+        </Anchors>
+    </Button>
+    
+    <Button name="VaenylaeBardLineEditorFrameDeleteButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Delete">
+        <Size>
+            <AbsDimension x="60" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameDownButton" relativePoint="RIGHT" x="5" y="0"/>
+        </Anchors>
+    </Button>
+    
+    <Button name="VaenylaeBardLineEditorFrameAddLineButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Add New Line">
+        <Size>
+            <AbsDimension x="100" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameDeleteButton" relativePoint="RIGHT" x="15" y="0"/>
+        </Anchors>
+    </Button>
+    
+    <!-- Line Text Label and EditBox -->
+    <FontString name="VaenylaeBardLineEditorFrameLineTextLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Line Text:">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameUpButton" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
+        </Anchors>
+    </FontString>
+    
+    <EditBox name="VaenylaeBardLineEditorFrameLineTextBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
+        <Size>
+            <AbsDimension x="380" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrameLineTextLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+        </Anchors>
         <Scripts>
             <OnLoad>
-                this:RegisterForDrag("LeftButton");
+                this:SetAutoFocus(false);
+                this:SetFontObject(ChatFontNormal);
             </OnLoad>
-            <OnDragStart>
-                this:StartMoving();
-            </OnDragStart>
-            <OnDragStop>
-                this:StopMovingOrSizing();
-            </OnDragStop>
         </Scripts>
-    </Frame>
-
-</Ui>
+    </EditBox>
+    
+    <!-- Emote Label and EditBox -->
+    <FontString name="VaenylaeBardLineEditorFrameEmoteLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Emote (optional):">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameLineTextBox" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
+        </Anchors>
+    </FontString>
+    
+    <EditBox name="VaenylaeBardLineEditorFrameEmoteBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
+        <Size>
+            <AbsDimension x="200" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameEmoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+        </Anchors>
+        <Scripts>
+            <OnLoad>
+                this:SetAutoFocus(false);
+                this:SetFontObject(ChatFontNormal);
+            </OnLoad>
+        </Scripts>
+    </EditBox>
+    
+    <!-- Delay Label and EditBox -->
+    <FontString name="VaenylaeBardLineEditorFrameDelayLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Delay (seconds):">
+        <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameEmoteBox" relativePoint="TOPRIGHT" x="20" y="15"/>
+        </Anchors>
+    </FontString>
+    
+    <EditBox name="VaenylaeBardLineEditorFrameDelayBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
+        <Size>
+            <AbsDimension x="80" y="32"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrameDelayLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+        </Anchors>
+        <Scripts>
+            <OnLoad>
+                this:SetAutoFocus(false);
+                this:SetFontObject(ChatFontNormal);
+                this:SetText("3");
+            </OnLoad>
+        </Scripts>
+    </EditBox>
+    
+    <!-- Save Line Button -->
+    <Button name="VaenylaeBardLineEditorFrameSaveLineButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Save Line">
