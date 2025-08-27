@@ -1,36 +1,31 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 
-  <!-- Song List Button Template (following TurtleRP_DirectoryButtonTemplate pattern) -->
+  <!-- Song List Button Template (following TurtleRP_DirectoryButtonTemplate pattern exactly) -->
   <Button name="VaenylaeBardSongButtonTemplate" virtual="true">
     <Size>
       <AbsDimension x="340" y="20"/>
     </Size>
+    <Layers>
+      <Layer level="BORDER">
+        <FontString name="$parentSongName" inherits="GameFontNormalSmall" justifyH="LEFT">
+          <Size>
+            <AbsDimension x="330" y="18"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="10" y="-1"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
     <Scripts>
-      <OnLoad>
-        this:SetFont("Fonts\\FRIZQT__.ttf", 10)
-      </OnLoad>
       <OnClick>
         VaenylaeBard.SelectSong(this.songName)
       </OnClick>
     </Scripts>
-    <NormalText inherits="GameFontNormalSmall">
-      <Anchors>
-        <Anchor point="LEFT">
-          <Offset>
-            <AbsDimension x="5" y="0"/>
-          </Offset>
-        </Anchor>
-      </Anchors>
-    </NormalText>
-    <HighlightText inherits="GameFontHighlightSmall">
-      <Anchors>
-        <Anchor point="LEFT">
-          <Offset>
-            <AbsDimension x="5" y="0"/>
-          </Offset>
-        </Anchor>
-      </Anchors>
-    </HighlightText>
     <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
   </Button>
 

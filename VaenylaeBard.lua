@@ -56,6 +56,8 @@ function VaenylaeBard:OnEvent()
         VaenylaeBard.DebugInfo()
       elseif msg == "debugdialog" then
         VaenylaeBard.ShowAddSongDialog()
+      elseif msg == "debugbuttons" then
+        VaenylaeBard.CreateSongButtons()
       else
         VaenylaeBard.ToggleMainFrame()
       end
@@ -143,18 +145,67 @@ end
 -- Song Button Management (following TurtleRP DirectoryButton pattern)
 -----
 function VaenylaeBard.CreateSongButtons()
-  for i = 1, 15 do -- Create 15 buttons like TurtleRP Directory
-    local button = CreateFrame("Button", "VaenylaeBardSongButton" .. i, VaenylaeBardMainFrame_SongScrollBox, "VaenylaeBardSongButtonTemplate")
-    button:SetID(i)
+  VaenylaeBard.log("=== CreateSongButtons Debug ===")
+  
+  -- Completely bypass templates - create buttons manually like TurtleRP does for simple buttons
+  for i = 1, 15 do
+    -- Check if button already exists first
+    local existingButton = getglobal("VaenylaeBardSongButton" .. i)
+    if existingButton then
+      existingButton:Hide()
+      existingButton = nil
+    end
     
+    -- Create button completely manually
+    local button = CreateFrame("Button", "VaenylaeBardSongButton" .. i, VaenylaeBardMainFrame_SongScrollBox)
+    
+    -- Classic WoW way to set size
+    button:SetWidth(340)
+    button:SetHeight(20)
+    button:EnableMouse(true)
+    
+    -- Create background texture
+    local bgTexture = button:CreateTexture(nil, "BACKGROUND")
+    bgTexture:SetAllPoints()
+    bgTexture:SetTexture(0, 0, 0, 0.1) -- Very subtle background
+    
+    -- Create highlight texture
+    local highlightTexture = button:CreateTexture(nil, "HIGHLIGHT")
+    highlightTexture:SetTexture("Interface\\Buttons\\UI-Common-MouseHilight")
+    highlightTexture:SetBlendMode("ADD")
+    highlightTexture:SetAllPoints()
+    button:SetHighlightTexture(highlightTexture)
+    
+    -- Create text using FontString
+    local text = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    text:SetPoint("LEFT", button, "LEFT", 10, 0)
+    text:SetJustifyH("LEFT")
+    text:SetText("Song " .. i) -- Test text
+    button.textElement = text
+    
+    -- Position the button
     if i == 1 then
       button:SetPoint("TOPLEFT", VaenylaeBardMainFrame_SongScrollBox, "TOPLEFT", 5, -5)
     else
-      button:SetPoint("TOPLEFT", "VaenylaeBardSongButton" .. (i-1), "BOTTOMLEFT", 0, 0)
+      button:SetPoint("TOPLEFT", getglobal("VaenylaeBardSongButton" .. (i-1)), "BOTTOMLEFT", 0, 0)
     end
     
+    -- Set up click handler
+    button:SetScript("OnClick", function()
+      if this.songName then
+        VaenylaeBard.SelectSong(this.songName)
+      end
+    end)
+    
+    -- Force show
+    button:Show()
+    
     VaenylaeBard.songButtons[i] = button
+    VaenylaeBard.log("Created manual button " .. i .. " - visible: " .. tostring(button:IsVisible()))
   end
+  
+  VaenylaeBard.log("Created " .. table.getn(VaenylaeBard.songButtons) .. " manual buttons")
+  VaenylaeBard.log("=== End CreateSongButtons Debug ===")
 end
 
 function VaenylaeBard.CreateLineButtons()
@@ -176,6 +227,8 @@ end
 -- Scroll Management (following TurtleRP FauxScrollFrame pattern)
 -----
 function VaenylaeBard.SongScrollBar_Update()
+  VaenylaeBard.log("=== SongScrollBar_Update Debug ===")
+  
   local songs = {}
   for name, _ in pairs(VaenylaeBardSongs) do
     table.insert(songs, name)
@@ -183,19 +236,45 @@ function VaenylaeBard.SongScrollBar_Update()
   table.sort(songs)
   
   local numSongs = table.getn(songs)
-  local offset = FauxScrollFrame_GetOffset(VaenylaeBardMainFrame_SongScrollBox)
+  VaenylaeBard.log("Processing " .. numSongs .. " songs for display")
   
-  FauxScrollFrame_Update(VaenylaeBardMainFrame_SongScrollBox, numSongs, 15, 20)
+  -- Check if we have song buttons
+  if not VaenylaeBard.songButtons or table.getn(VaenylaeBard.songButtons) == 0 then
+    VaenylaeBard.log("ERROR: No song buttons exist!")
+    return
+  end
+  
+  local offset = 0
+  if VaenylaeBardMainFrame_SongScrollBox then
+    offset = FauxScrollFrame_GetOffset(VaenylaeBardMainFrame_SongScrollBox)
+    FauxScrollFrame_Update(VaenylaeBardMainFrame_SongScrollBox, numSongs, 15, 20)
+  else
+    VaenylaeBard.log("ERROR: ScrollBox does not exist!")
+  end
   
   for i = 1, 15 do
     local button = VaenylaeBard.songButtons[i]
+    if not button then
+      VaenylaeBard.log("ERROR: Button " .. i .. " does not exist!")
+      break
+    end
+    
     local songIndex = i + offset
     
     if songIndex <= numSongs then
       local songName = songs[songIndex]
-      button:SetText(songName)
+      
+      -- Set text on the FontString child (TurtleRP pattern)
+      local fontString = getglobal(button:GetName() .. "SongName")
+      if fontString then
+        fontString:SetText(songName)
+      else
+        VaenylaeBard.log("ERROR: FontString not found for button " .. i)
+      end
+      
       button.songName = songName
       button:Show()
+      VaenylaeBard.log("Showing button " .. i .. " with song: " .. songName)
       
       -- Highlight selected song
       if songName == VaenylaeBard.selectedSong then
@@ -207,6 +286,8 @@ function VaenylaeBard.SongScrollBar_Update()
       button:Hide()
     end
   end
+  
+  VaenylaeBard.log("=== End SongScrollBar_Update Debug ===")
 end
 
 function VaenylaeBard.LineScrollBar_Update()
@@ -351,7 +432,21 @@ function VaenylaeBard.RemoveSelectedSong()
 end
 
 function VaenylaeBard.UpdateSongList()
+  VaenylaeBard.log("=== UpdateSongList Debug ===")
+  
+  -- Count songs
+  local songCount = 0
+  for name, _ in pairs(VaenylaeBardSongs) do
+    songCount = songCount + 1
+    VaenylaeBard.log("Found song: " .. name)
+  end
+  
+  VaenylaeBard.log("Total songs: " .. songCount)
+  
+  -- Update the scroll display
   VaenylaeBard.SongScrollBar_Update()
+  
+  VaenylaeBard.log("=== End UpdateSongList Debug ===")
 end
 
 function VaenylaeBard.OpenLineEditor()
