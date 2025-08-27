@@ -69,7 +69,7 @@
   </Button>
 
   <!-- Main Bard Manager Frame (following TurtleRP backdrop pattern) -->
-  <Frame name="VaenylaeBardMainFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+  <Frame name="VaenylaeBardMainFrame" toplevel="true" parent="UIParent" enableMouse="true" movable="true" hidden="true">
     <Size>
       <AbsDimension x="400" y="500"/>
     </Size>
@@ -91,6 +91,17 @@
         <AbsValue val="32"/>
       </EdgeSize>
     </Backdrop>
+    <Scripts>
+      <OnLoad>
+        this:RegisterForDrag("LeftButton");
+      </OnLoad>
+      <OnDragStart>
+        this:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        this:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
     <Layers>
       <Layer level="OVERLAY">
         <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Vaenylae Bard">
@@ -256,12 +267,12 @@
   </Frame>
 
   <!-- Add Song Dialog (following TurtleRP_IconSelector pattern) -->
-  <Frame name="VaenylaeBardAddSongDialog" hidden="true">
+  <Frame name="VaenylaeBardAddSongDialog" toplevel="true" parent="UIParent" movable="true" enableMouse="true" frameStrata="DIALOG" hidden="true">
     <Size>
       <AbsDimension x="300" y="150"/>
     </Size>
     <Anchors>
-      <Anchor point="CENTER" relativeTo="VaenylaeBardMainFrame" relativePoint="CENTER">
+      <Anchor point="CENTER">
         <Offset>
           <AbsDimension x="0" y="0"/>
         </Offset>
@@ -278,6 +289,17 @@
         <AbsValue val="32"/>
       </EdgeSize>
     </Backdrop>
+    <Scripts>
+      <OnLoad>
+        this:RegisterForDrag("LeftButton");
+      </OnLoad>
+      <OnDragStart>
+        this:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        this:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
     <Frames>
       <!-- Close button -->
       <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
@@ -376,7 +398,7 @@
   </Frame>
 
   <!-- Line Editor Frame (following TurtleRP backdrop pattern) -->
-  <Frame name="VaenylaeBardLineEditorFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+  <Frame name="VaenylaeBardLineEditorFrame" toplevel="true" parent="UIParent" enableMouse="true" movable="true" hidden="true">
     <Size>
       <AbsDimension x="500" y="600"/>
     </Size>
@@ -398,6 +420,17 @@
         <AbsValue val="32"/>
       </EdgeSize>
     </Backdrop>
+    <Scripts>
+      <OnLoad>
+        this:RegisterForDrag("LeftButton");
+      </OnLoad>
+      <OnDragStart>
+        this:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        this:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
     <Layers>
       <Layer level="OVERLAY">
         <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Song Line Editor">

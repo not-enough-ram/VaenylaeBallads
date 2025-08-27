@@ -95,14 +95,35 @@ function VaenylaeBard.InitializeUI()
   -- Set up close button scripts
   VaenylaeBardMainFrame_CloseButton:SetScript("OnClick", function()
     VaenylaeBardMainFrame:Hide()
+    -- Also hide the add song dialog if it's open
+    VaenylaeBardAddSongDialog:Hide()
   end)
   
   VaenylaeBardLineEditorFrame_CloseButton:SetScript("OnClick", function()
     VaenylaeBardLineEditorFrame:Hide()
   end)
   
-  -- Set up main frame buttons (already defined in XML OnClick)
-  -- No additional setup needed thanks to XML event handlers
+  -- Set up add song dialog close button
+  VaenylaeBardAddSongDialog_CloseButton:SetScript("OnClick", function()
+    VaenylaeBardAddSongDialog:Hide()
+  end)
+  
+  -- Set up add song dialog cancel button  
+  VaenylaeBardAddSongDialog_CancelButton:SetScript("OnClick", function()
+    VaenylaeBardAddSongDialog:Hide()
+  end)
+  
+  -- Set up add song dialog add button
+  VaenylaeBardAddSongDialog_AddButton:SetScript("OnClick", function()
+    VaenylaeBard.AddNewSong()
+  end)
+  
+  -- Set up enter key on add song editbox
+  VaenylaeBardAddSongDialog_EditBox:SetScript("OnEnterPressed", function()
+    VaenylaeBard.AddNewSong()
+  end)
+  
+  -- No additional setup needed for main frame buttons thanks to XML event handlers
 end
 
 function VaenylaeBard.ToggleMainFrame()
@@ -248,6 +269,7 @@ function VaenylaeBard.SelectSong(songName)
 end
 
 function VaenylaeBard.ShowAddSongDialog()
+  VaenylaeBardAddSongDialog_EditBox:SetText("")
   VaenylaeBardAddSongDialog:Show()
   VaenylaeBardAddSongDialog_EditBox:SetFocus()
 end
