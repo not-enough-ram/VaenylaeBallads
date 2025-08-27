@@ -1,289 +1,879 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
 
-    <!-- Main Bard Manager Frame -->
-    <Frame name="VaenylaeBardMainFrame" movable="true" enableMouse="true" hidden="true" frameStrata="MEDIUM" toplevel="true">
-        <Size>
-            <AbsDimension x="400" y="450"/>
-        </Size>
-        <Anchors>
-            <Anchor point="CENTER"/>
-        </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
-                 edgeFile="Interface\DialogFrame\UI-DialogBox-Border" 
-                 tile="true">
-            <EdgeSize>
-                <AbsValue val="32"/>
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="32"/>
-            </TileSize>
-            <BackgroundInsets>
-                <AbsInset left="11" right="12" top="12" bottom="11"/>
-            </BackgroundInsets>
-        </Backdrop>
-        
-        <Scripts>
-            <OnLoad>
-                this:RegisterForDrag("LeftButton");
-            </OnLoad>
-            <OnDragStart>
-                this:StartMoving();
-            </OnDragStart>
-            <OnDragStop>
-                this:StopMovingOrSizing();
-            </OnDragStop>
-        </Scripts>
-    </Frame>
+  <!-- Song List Button Template (following TurtleRP_DirectoryButtonTemplate pattern) -->
+  <Button name="VaenylaeBardSongButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="340" y="20"/>
+    </Size>
+    <Scripts>
+      <OnLoad>
+        this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+      </OnLoad>
+      <OnClick>
+        VaenylaeBard.SelectSong(this.songName)
+      </OnClick>
+    </Scripts>
+    <NormalText inherits="GameFontNormalSmall">
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="5" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalText>
+    <HighlightText inherits="GameFontHighlightSmall">
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="5" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightText>
+    <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+  </Button>
 
-    <!-- Main Frame Title -->
-    <FontString name="VaenylaeBardMainFrameTitle" parent="VaenylaeBardMainFrame" inherits="GameFontNormalLarge" text="Vaenylae Bard Manager">
-        <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrame" relativePoint="TOP" x="0" y="-20"/>
-        </Anchors>
-    </FontString>
-    
-    <!-- Main Frame Close Button -->
-    <Button name="VaenylaeBardMainFrameCloseButton" parent="VaenylaeBardMainFrame" inherits="UIPanelCloseButton">
-        <Anchors>
-            <Anchor point="TOPRIGHT" relativeTo="VaenylaeBardMainFrame" relativePoint="TOPRIGHT" x="-8" y="-8"/>
-        </Anchors>
-    </Button>
-    
-    <!-- Song List Container (Simple Frame instead of ScrollFrame) -->
-    <Frame name="VaenylaeBardMainFrameSongList" parent="VaenylaeBardMainFrame">
-        <Size>
-            <AbsDimension x="350" y="300"/>
-        </Size>
-        <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrame" relativePoint="TOP" x="0" y="-50"/>
-        </Anchors>
-        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" 
-                 edgeFile="Interface\Tooltips\UI-Tooltip-Border" 
-                 tile="true">
-            <EdgeSize>
-                <AbsValue val="16"/>
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="16"/>
-            </TileSize>
-            <BackgroundInsets>
-                <AbsInset left="4" right="4" top="4" bottom="4"/>
-            </BackgroundInsets>
-        </Backdrop>
-    </Frame>
-    
-    <!-- Main Frame Instructions -->
-    <FontString name="VaenylaeBardMainFrameInstructions" parent="VaenylaeBardMainFrame" inherits="GameFontNormal" text="Click a song to edit its lines. Use buttons below to manage songs.">
-        <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardMainFrameSongList" relativePoint="BOTTOM" x="0" y="-10"/>
-        </Anchors>
-    </FontString>
-    
-    <!-- Add Song Button -->
-    <Button name="VaenylaeBardMainFrameAddSongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Add Song">
-        <Size>
-            <AbsDimension x="100" y="25"/>
-        </Size>
-        <Anchors>
-            <Anchor point="BOTTOMLEFT" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOMLEFT" x="30" y="20"/>
-        </Anchors>
-    </Button>
-    
-    <!-- Remove Song Button -->
-    <Button name="VaenylaeBardMainFrameRemoveSongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Remove Song">
-        <Size>
-            <AbsDimension x="100" y="25"/>
-        </Size>
-        <Anchors>
-            <Anchor point="BOTTOM" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOM" x="0" y="20"/>
-        </Anchors>
-    </Button>
-    
-    <!-- Play Song Button -->
-    <Button name="VaenylaeBardMainFramePlaySongButton" parent="VaenylaeBardMainFrame" inherits="UIPanelButtonTemplate" text="Play Song">
-        <Size>
-            <AbsDimension x="100" y="25"/>
-        </Size>
-        <Anchors>
-            <Anchor point="BOTTOMRIGHT" relativeTo="VaenylaeBardMainFrame" relativePoint="BOTTOMRIGHT" x="-30" y="20"/>
-        </Anchors>
-    </Button>
+  <!-- Line List Button Template -->
+  <Button name="VaenylaeBardLineButtonTemplate" virtual="true">
+    <Size>
+      <AbsDimension x="430" y="18"/>
+    </Size>
+    <Scripts>
+      <OnLoad>
+        this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+      </OnLoad>
+      <OnClick>
+        VaenylaeBard.SelectLine(this.lineIndex)
+      </OnClick>
+    </Scripts>
+    <NormalText inherits="GameFontNormalSmall">
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="5" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </NormalText>
+    <HighlightText inherits="GameFontHighlightSmall">
+      <Anchors>
+        <Anchor point="LEFT">
+          <Offset>
+            <AbsDimension x="5" y="0"/>
+          </Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightText>
+    <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+  </Button>
 
-    <!-- Line Editor Frame -->
-    <Frame name="VaenylaeBardLineEditorFrame" movable="true" enableMouse="true" hidden="true" frameStrata="HIGH" toplevel="true">
+  <!-- Main Bard Manager Frame (following TurtleRP_AdminSB pattern) -->
+  <Frame name="VaenylaeBardMainFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+    <Size>
+      <AbsDimension x="384" y="512"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="45"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\SpellBook\SpellBook-Page-1">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-2">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-1">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-2">
+          <Size>
+            <AbsDimension x="128" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Vaenylae Bard">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="65" y="-40"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parent_Icon" file="Interface\Icons\INV_Misc_Drum_01">
+          <Size>
+            <AbsDimension x="30" y="30"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="30" y="-33"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        if ShaguTweaks_config and ShaguTweaks_config["Darkened UI"] and ShaguTweaks_config["Darkened UI"] == 1 then
+          this.Material = this.Material or this:CreateTexture(nil, "OVERLAY")
+          this.Material:SetTexture("Interface\\Stationery\\StationeryTest1")
+          this.Material:SetWidth(325)
+          this.Material:SetHeight(355)
+          this.Material:SetPoint("TOPLEFT", this, 17, -74)
+          this.Material:SetVertexColor(.8, .8, .8)
+        end
+      </OnLoad>
+    </Scripts>
+    <Frames>
+      <!-- Close Button -->
+      <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-27" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Song List ScrollFrame (following TurtleRP pattern) -->
+      <ScrollFrame name="$parent_SongScrollBox" inherits="FauxScrollFrameTemplate">
         <Size>
-            <AbsDimension x="450" y="500"/>
+          <AbsDimension x="350" y="280"/>
         </Size>
         <Anchors>
-            <Anchor point="CENTER" x="250" y="0"/>
+          <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="20" y="-80"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-35" y="120"/>
+            </Offset>
+          </Anchor>
         </Anchors>
-        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
-                 edgeFile="Interface\DialogFrame\UI-DialogBox-Border" 
-                 tile="true">
-            <EdgeSize>
-                <AbsValue val="32"/>
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="32"/>
-            </TileSize>
-            <BackgroundInsets>
-                <AbsInset left="11" right="12" top="12" bottom="11"/>
-            </BackgroundInsets>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(20, VaenylaeBard.SongScrollBar_Update);
+          </OnVerticalScroll>
+          <OnShow>
+            VaenylaeBard.SongScrollBar_Update()
+          </OnShow>
+        </Scripts>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+          <EdgeSize>
+            <AbsValue val="0.5"/>
+          </EdgeSize>
+          <Color r="1" g="1" b="1" a="0.1"/>
+          <BorderColor r="255" g="255" b="255" a="0"/>
         </Backdrop>
-        
-        <Scripts>
-            <OnLoad>
-                this:RegisterForDrag("LeftButton");
-            </OnLoad>
-            <OnDragStart>
-                this:StartMoving();
-            </OnDragStart>
-            <OnDragStop>
-                this:StopMovingOrSizing();
-            </OnDragStop>
-        </Scripts>
-    </Frame>
-    
-    <!-- Line Editor Title -->
-    <FontString name="VaenylaeBardLineEditorFrameTitle" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormalLarge" text="Song Line Editor">
-        <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOP" x="0" y="-20"/>
-        </Anchors>
-    </FontString>
-    
-    <!-- Line Editor Close Button -->
-    <Button name="VaenylaeBardLineEditorFrameCloseButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelCloseButton">
-        <Anchors>
-            <Anchor point="TOPRIGHT" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOPRIGHT" x="-8" y="-8"/>
-        </Anchors>
-    </Button>
-    
-    <!-- Line List Container (Simple Frame) -->
-    <Frame name="VaenylaeBardLineEditorFrameLineList" parent="VaenylaeBardLineEditorFrame">
+      </ScrollFrame>
+
+      <!-- Song Management Buttons -->
+      <Button name="$parent_AddSongButton" inherits="UIPanelButtonGrayTemplate" text="Add Song">
         <Size>
-            <AbsDimension x="400" y="180"/>
+          <AbsDimension x="80" y="25"/>
         </Size>
         <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrame" relativePoint="TOP" x="0" y="-50"/>
+          <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="30" y="60"/>
+            </Offset>
+          </Anchor>
         </Anchors>
-        <Backdrop bgFile="Interface\Tooltips\UI-Tooltip-Background" 
-                 edgeFile="Interface\Tooltips\UI-Tooltip-Border" 
-                 tile="true">
-            <EdgeSize>
-                <AbsValue val="16"/>
-            </EdgeSize>
-            <TileSize>
-                <AbsValue val="16"/>
-            </TileSize>
-            <BackgroundInsets>
-                <AbsInset left="4" right="4" top="4" bottom="4"/>
-            </BackgroundInsets>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.ShowAddSongDialog()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_RemoveSongButton" inherits="UIPanelButtonGrayTemplate" text="Remove">
+        <Size>
+          <AbsDimension x="70" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parent_AddSongButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.RemoveSelectedSong()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_EditSongButton" inherits="UIPanelButtonGrayTemplate" text="Edit Lines">
+        <Size>
+          <AbsDimension x="80" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parent_RemoveSongButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.OpenLineEditor()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_PlaySongButton" inherits="UIPanelButtonGrayTemplate" text="Play">
+        <Size>
+          <AbsDimension x="60" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parent_EditSongButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="10" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.PlaySelectedSong()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Status Text -->
+      <FontString name="$parent_StatusText" inherits="GameFontNormalSmall" text="Select a song from the list above">
+        <Anchors>
+          <Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+            <Offset>
+              <AbsDimension x="0" y="30"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+    </Frames>
+  </Frame>
+
+  <!-- Add Song Dialog (following TurtleRP_IconSelector pattern) -->
+  <Frame name="VaenylaeBardAddSongDialog" hidden="true">
+    <Size>
+      <AbsDimension x="300" y="150"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativeTo="VaenylaeBardMainFrame" relativePoint="CENTER">
+        <Offset>
+          <AbsDimension x="0" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    <Frames>
+      <!-- Close button -->
+      <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-10" y="-10"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnClick>
+            VaenylaeBardAddSongDialog:Hide()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Title -->
+      <FontString name="$parent_Title" inherits="GameFontNormal" text="Add New Song">
+        <Anchors>
+          <Anchor point="TOP">
+            <Offset>
+              <AbsDimension x="0" y="-25"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+
+      <!-- Song name input -->
+      <EditBox name="$parent_EditBox" maxLetters="50" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false">
+        <Size>
+          <AbsDimension x="250" y="20"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
+            <Offset>
+              <AbsDimension x="0" y="-20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <FontString inherits="ChatFontNormal"/>
+        <Scripts>
+          <OnEnterPressed>
+            VaenylaeBard.AddNewSong()
+          </OnEnterPressed>
+        </Scripts>
+      </EditBox>
+
+      <!-- Add button -->
+      <Button name="$parent_AddButton" inherits="UIPanelButtonGrayTemplate" text="Add Song">
+        <Size>
+          <AbsDimension x="80" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="50" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.AddNewSong()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Cancel button -->
+      <Button name="$parent_CancelButton" inherits="UIPanelButtonGrayTemplate" text="Cancel">
+        <Size>
+          <AbsDimension x="80" y="25"/>
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-50" y="20"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBardAddSongDialog:Hide()
+          </OnClick>
+        </Scripts>
+      </Button>
+    </Frames>
+  </Frame>
+
+  <!-- Line Editor Frame (following TurtleRP_CharacterDetails pattern) -->
+  <Frame name="VaenylaeBardLineEditorFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
+    <Size>
+      <AbsDimension x="500" y="600"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER">
+        <Offset>
+          <AbsDimension x="250" y="0"/>
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <HitRectInsets>
+      <AbsInset left="0" right="30" top="0" bottom="45"/>
+    </HitRectInsets>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture file="Interface\SpellBook\SpellBook-Page-1">
+          <Size>
+            <AbsDimension x="256" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-2">
+          <Size>
+            <AbsDimension x="244" y="256"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-1">
+          <Size>
+            <AbsDimension x="256" y="344"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMLEFT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <Texture file="Interface\SpellBook\SpellBook-Page-2">
+          <Size>
+            <AbsDimension x="244" y="344"/>
+          </Size>
+          <Anchors>
+            <Anchor point="BOTTOMRIGHT">
+              <Offset>
+                <AbsDimension x="0" y="0"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Song Line Editor">
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="65" y="-40"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <Texture name="$parent_Icon" file="Interface\Icons\INV_Misc_Note_01">
+          <Size>
+            <AbsDimension x="30" y="30"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT">
+              <Offset>
+                <AbsDimension x="30" y="-33"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        if ShaguTweaks_config and ShaguTweaks_config["Darkened UI"] and ShaguTweaks_config["Darkened UI"] == 1 then
+          this.Material = this.Material or this:CreateTexture(nil, "OVERLAY")
+          this.Material:SetTexture("Interface\\Stationery\\StationeryTest1")
+          this.Material:SetWidth(440)
+          this.Material:SetHeight(540)
+          this.Material:SetPoint("TOPLEFT", this, 17, -74)
+          this.Material:SetVertexColor(.8, .8, .8)
+        end
+      </OnLoad>
+    </Scripts>
+    <Frames>
+      <!-- Close Button -->
+      <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
+        <Anchors>
+          <Anchor point="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-27" y="-14"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+
+      <!-- Line List ScrollFrame -->
+      <ScrollFrame name="$parent_LineScrollBox" inherits="FauxScrollFrameTemplate">
+        <Size>
+          <AbsDimension x="450" y="200"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+            <Offset>
+              <AbsDimension x="20" y="-80"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+            <Offset>
+              <AbsDimension x="-35" y="-80"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(18, VaenylaeBard.LineScrollBar_Update);
+          </OnVerticalScroll>
+          <OnShow>
+            VaenylaeBard.LineScrollBar_Update()
+          </OnShow>
+        </Scripts>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+          <EdgeSize>
+            <AbsValue val="0.5"/>
+          </EdgeSize>
+          <Color r="1" g="1" b="1" a="0.1"/>
+          <BorderColor r="255" g="255" b="255" a="0"/>
         </Backdrop>
-    </Frame>
-    
-    <!-- Line Management Buttons -->
-    <Button name="VaenylaeBardLineEditorFrameUpButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Move Up">
+      </ScrollFrame>
+
+      <!-- Line Management Buttons -->
+      <Button name="$parent_AddLineButton" inherits="UIPanelButtonGrayTemplate" text="Add Line">
         <Size>
-            <AbsDimension x="80" y="22"/>
+          <AbsDimension x="70" y="22"/>
         </Size>
         <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameLineList" relativePoint="BOTTOMLEFT" x="0" y="-10"/>
-        </Anchors>
-    </Button>
-    
-    <Button name="VaenylaeBardLineEditorFrameDownButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Move Down">
-        <Size>
-            <AbsDimension x="80" y="22"/>
-        </Size>
-        <Anchors>
-            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameUpButton" relativePoint="RIGHT" x="5" y="0"/>
-        </Anchors>
-    </Button>
-    
-    <Button name="VaenylaeBardLineEditorFrameDeleteButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Delete">
-        <Size>
-            <AbsDimension x="60" y="22"/>
-        </Size>
-        <Anchors>
-            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameDownButton" relativePoint="RIGHT" x="5" y="0"/>
-        </Anchors>
-    </Button>
-    
-    <Button name="VaenylaeBardLineEditorFrameAddLineButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Add New Line">
-        <Size>
-            <AbsDimension x="100" y="22"/>
-        </Size>
-        <Anchors>
-            <Anchor point="LEFT" relativeTo="VaenylaeBardLineEditorFrameDeleteButton" relativePoint="RIGHT" x="15" y="0"/>
-        </Anchors>
-    </Button>
-    
-    <!-- Line Text Label and EditBox -->
-    <FontString name="VaenylaeBardLineEditorFrameLineTextLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Line Text:">
-        <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameUpButton" relativePoint="BOTTOMLEFT" x="0" y="-20"/>
-        </Anchors>
-    </FontString>
-    
-    <EditBox name="VaenylaeBardLineEditorFrameLineTextBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
-        <Size>
-            <AbsDimension x="380" y="32"/>
-        </Size>
-        <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrameLineTextLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+          <Anchor point="TOPLEFT" relativeTo="$parent_LineScrollBox" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-10"/>
+            </Offset>
+          </Anchor>
         </Anchors>
         <Scripts>
-            <OnLoad>
-                this:SetAutoFocus(false);
-                this:SetFontObject(ChatFontNormal);
-            </OnLoad>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.AddNewLine()
+          </OnClick>
         </Scripts>
-    </EditBox>
-    
-    <!-- Emote Label and EditBox -->
-    <FontString name="VaenylaeBardLineEditorFrameEmoteLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Emote (optional):">
-        <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameLineTextBox" relativePoint="BOTTOMLEFT" x="0" y="-15"/>
-        </Anchors>
-    </FontString>
-    
-    <EditBox name="VaenylaeBardLineEditorFrameEmoteBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
+      </Button>
+
+      <Button name="$parent_MoveUpButton" inherits="UIPanelButtonGrayTemplate" text="Move Up">
         <Size>
-            <AbsDimension x="200" y="32"/>
+          <AbsDimension x="70" y="22"/>
         </Size>
         <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameEmoteLabel" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+          <Anchor point="LEFT" relativeTo="$parent_AddLineButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
         </Anchors>
         <Scripts>
-            <OnLoad>
-                this:SetAutoFocus(false);
-                this:SetFontObject(ChatFontNormal);
-            </OnLoad>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.MoveLineUp()
+          </OnClick>
         </Scripts>
-    </EditBox>
-    
-    <!-- Delay Label and EditBox -->
-    <FontString name="VaenylaeBardLineEditorFrameDelayLabel" parent="VaenylaeBardLineEditorFrame" inherits="GameFontNormal" text="Delay (seconds):">
-        <Anchors>
-            <Anchor point="TOPLEFT" relativeTo="VaenylaeBardLineEditorFrameEmoteBox" relativePoint="TOPRIGHT" x="20" y="15"/>
-        </Anchors>
-    </FontString>
-    
-    <EditBox name="VaenylaeBardLineEditorFrameDelayBox" parent="VaenylaeBardLineEditorFrame" inherits="InputBoxTemplate">
+      </Button>
+
+      <Button name="$parent_MoveDownButton" inherits="UIPanelButtonGrayTemplate" text="Move Down">
         <Size>
-            <AbsDimension x="80" y="32"/>
+          <AbsDimension x="80" y="22"/>
         </Size>
         <Anchors>
-            <Anchor point="TOP" relativeTo="VaenylaeBardLineEditorFrameDelayLabel" relativePoint="BOTTOM" x="0" y="-5"/>
+          <Anchor point="LEFT" relativeTo="$parent_MoveUpButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
         </Anchors>
         <Scripts>
-            <OnLoad>
-                this:SetAutoFocus(false);
-                this:SetFontObject(ChatFontNormal);
-                this:SetText("3");
-            </OnLoad>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.MoveLineDown()
+          </OnClick>
         </Scripts>
-    </EditBox>
-    
-    <!-- Save Line Button -->
-    <Button name="VaenylaeBardLineEditorFrameSaveLineButton" parent="VaenylaeBardLineEditorFrame" inherits="UIPanelButtonTemplate" text="Save Line">
+      </Button>
+
+      <Button name="$parent_DeleteButton" inherits="UIPanelButtonGrayTemplate" text="Delete">
+        <Size>
+          <AbsDimension x="60" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parent_MoveDownButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="5" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.DeleteSelectedLine()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_PreviewButton" inherits="UIPanelButtonGrayTemplate" text="Preview">
+        <Size>
+          <AbsDimension x="70" y="22"/>
+        </Size>
+        <Anchors>
+          <Anchor point="LEFT" relativeTo="$parent_DeleteButton" relativePoint="RIGHT">
+            <Offset>
+              <AbsDimension x="15" y="0"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            this:SetFont("Fonts\\FRIZQT__.ttf", 9)
+          </OnLoad>
+          <OnClick>
+            VaenylaeBard.PreviewSelectedLine()
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <!-- Line Editor Section (following TurtleRP_CharacterDetails_Notes pattern) -->
+      <Frame name="$parent_EditSection" enableMouse="true">
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parent_AddLineButton" relativePoint="BOTTOMLEFT">
+            <Offset>
+              <AbsDimension x="0" y="-20"/>
+            </Offset>
+          </Anchor>
+          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+            <Offset>
+              <AbsDimension x="-35" y="75"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+          <EdgeSize>
+            <AbsValue val="0.5"/>
+          </EdgeSize>
+          <Color r="0" g="0" b="0" a="0.3"/>
+          <BorderColor r="255" g="255" b="255" a="0"/>
+        </Backdrop>
+        <Frames>
+          <!-- Save Button -->
+          <Button name="$parent_SaveButton" inherits="UIPanelButtonGrayTemplate" text="Save Line">
+            <Size>
+              <AbsDimension x="80" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+                <Offset>
+                  <AbsDimension x="-20" y="20"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+              </OnLoad>
+              <OnClick>
+                VaenylaeBard.SaveCurrentLine()
+              </OnClick>
+            </Scripts>
+          </Button>
+
+          <!-- Clear Button -->
+          <Button name="$parent_ClearButton" inherits="UIPanelButtonGrayTemplate" text="Clear">
+            <Size>
+              <AbsDimension x="60" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="RIGHT" relativeTo="$parent_SaveButton" relativePoint="LEFT">
+                <Offset>
+                  <AbsDimension x="-10" y="0"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+              </OnLoad>
+              <OnClick>
+                VaenylaeBard.ClearEditFields()
+              </OnClick>
+            </Scripts>
+          </Button>
+
+          <!-- Line Text Section -->
+          <FontString name="$parent_LineTextLabel" inherits="GameFontNormal" text="Line Text (what to say):">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                <Offset>
+                  <AbsDimension x="15" y="-15"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </FontString>
+
+          <!-- Line Text ScrollFrame -->
+          <ScrollFrame name="$parent_LineTextScrollBox" enableMouse="true" inherits="UIPanelScrollFrameTemplate">
+            <Size>
+              <AbsDimension x="400" y="80"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent_LineTextLabel" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Backdrop bgFile="Interface\ChatFrame\ChatFrameBackground" edgeFile="Interface\ChatFrame\ChatFrameBackground" tile="true">
+              <EdgeSize>
+                <AbsValue val="0.5"/>
+              </EdgeSize>
+              <Color r="0" g="0" b="0" a="0.3"/>
+              <BorderColor r="255" g="255" b="255" a="0"/>
+            </Backdrop>
+            <Scripts>
+              <OnMouseDown>
+                VaenylaeBardLineEditorFrame_EditSection_LineTextScrollBox_LineTextInput:SetFocus()
+              </OnMouseDown>
+            </Scripts>
+            <ScrollChild>
+              <!-- Line Text Input Box -->
+              <EditBox name="$parent_LineTextInput" visible="true" enableMouse="true" autoFocus="false">
+                <Size>
+                  <AbsDimension x="380" y="2000"/>
+                </Size>
+                <Anchors>
+                  <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="0"/>
+                    </Offset>
+                  </Anchor>
+                  <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+                    <Offset>
+                      <AbsDimension x="0" y="0"/>
+                    </Offset>
+                  </Anchor>
+                </Anchors>
+                <FontString inherits="ChatFontNormal"/>
+                <Scripts>
+                  <OnLoad>
+                    this:SetMultiLine(true)
+                  </OnLoad>
+                </Scripts>
+              </EditBox>
+            </ScrollChild>
+          </ScrollFrame>
+
+          <!-- Emote Section -->
+          <FontString name="$parent_EmoteLabel" inherits="GameFontNormal" text="Emote (optional):">
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent_LineTextScrollBox" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-15"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </FontString>
+
+          <EditBox name="$parent_EmoteInput" maxLetters="100" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false">
+            <Size>
+              <AbsDimension x="250" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOPLEFT" relativeTo="$parent_EmoteLabel" relativePoint="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="0" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <FontString inherits="ChatFontNormal"/>
+          </EditBox>
+
+          <!-- Delay Section -->
+          <FontString name="$parent_DelayLabel" inherits="GameFontNormal" text="Delay (seconds):">
+            <Anchors>
+              <Anchor point="LEFT" relativeTo="$parent_EmoteInput" relativePoint="RIGHT">
+                <Offset>
+                  <AbsDimension x="20" y="15"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+          </FontString>
+
+          <EditBox name="$parent_DelayInput" maxLetters="5" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false">
+            <Size>
+              <AbsDimension x="60" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOP" relativeTo="$parent_DelayLabel" relativePoint="BOTTOM">
+                <Offset>
+                  <AbsDimension x="0" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <FontString inherits="ChatFontNormal"/>
+            <Scripts>
+              <OnLoad>
+                this:SetText("3")
+              </OnLoad>
+            </Scripts>
+          </EditBox>
+        </Frames>
+      </Frame>
+    </Frames>
+  </Frame>
+
+</Ui>

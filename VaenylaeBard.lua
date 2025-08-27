@@ -1,659 +1,510 @@
--- VaenylaeBard - Clean XML-based Version for Classic WoW
--- All UI elements are now defined in VaenylaeBard.xml
+-- VaenylaeBard - Following TurtleRP Architecture Pattern
+-- Created by Vaenylae, inspired by TurtleRP by Vee/Drixi
 
--- Global variables
-VaenylaeBardSongs = VaenylaeBardSongs or {}
-VaenylaeBardSelectedSong = nil
-VaenylaeBardSelectedLine = nil
+-----
+-- Global storage (not saved between sessions)
+-----
+VaenylaeBard = VaenylaeBard or {}
 
--- Easy access to UI elements (all exist thanks to XML)
-local MainFrame = VaenylaeBardMainFrame
-local LineEditorFrame = VaenylaeBardLineEditorFrame
-local AddSongDialog = VaenylaeBardAddSongDialog
+-- Version info
+VaenylaeBard.currentVersion = "1.0.0"
 
--- UI element references (using proper global names)
-local MainFrameCloseButton = VaenylaeBardMainFrameCloseButton
-local MainFrameAddSongButton = VaenylaeBardMainFrameAddSongButton
-local MainFrameRemoveSongButton = VaenylaeBardMainFrameRemoveSongButton
-local MainFramePlaySongButton = VaenylaeBardMainFramePlaySongButton
-local MainFrameSongScroll = VaenylaeBardMainFrameSongScroll
+-- UI state
+VaenylaeBard.selectedSong = nil
+VaenylaeBard.selectedLine = nil
+VaenylaeBard.isPlaying = nil
+VaenylaeBard.playTimer = nil
 
-local AddSongDialogEditBox = VaenylaeBardAddSongDialogEditBox
-local AddSongDialogAddButton = VaenylaeBardAddSongDialogAddButton
-local AddSongDialogCancelButton = VaenylaeBardAddSongDialogCancelButton
+-- Song buttons (similar to TurtleRP's button management)
+VaenylaeBard.songButtons = {}
+VaenylaeBard.lineButtons = {}
 
-local LineEditorCloseButton = VaenylaeBardLineEditorFrameCloseButton
-local LineEditorUpButton = VaenylaeBardLineEditorFrameUpButton
-local LineEditorDownButton = VaenylaeBardLineEditorFrameDownButton
-local LineEditorDeleteButton = VaenylaeBardLineEditorFrameDeleteButton
-local LineEditorAddLineButton = VaenylaeBardLineEditorFrameAddLineButton
-local LineEditorSaveLineButton = VaenylaeBardLineEditorFrameSaveLineButton
-local LineEditorClearButton = VaenylaeBardLineEditorFrameClearButton
-local LineEditorLineTextBox = VaenylaeBardLineEditorFrameLineTextBox
-local LineEditorEmoteBox = VaenylaeBardLineEditorFrameEmoteBox
-local LineEditorDelayBox = VaenylaeBardLineEditorFrameDelayBox
-local LineEditorTitle = VaenylaeBardLineEditorFrameTitle
-local LineEditorLineScroll = VaenylaeBardLineEditorFrameLineScroll
+-----
+-- Addon load event (following TurtleRP pattern)
+-----
+local VaenylaeBard_Parent = CreateFrame("Frame")
+VaenylaeBard_Parent:RegisterEvent("ADDON_LOADED")
+VaenylaeBard_Parent:RegisterEvent("PLAYER_LOGOUT")
 
--- Debug function to check what UI elements exist
-local function DebugUIElements()
-    print("=== Debugging UI Elements ===")
-    
-    local elements = {
-        -- Main frame elements
-        "VaenylaeBardMainFrame",
-        "VaenylaeBardMainFrameCloseButton", 
-        "VaenylaeBardMainFrameAddSongButton",
-        "VaenylaeBardMainFrameRemoveSongButton",
-        "VaenylaeBardMainFramePlaySongButton",
-        "VaenylaeBardMainFrameSongScroll",
-        "VaenylaeBardMainFrameSongList",
-        
-        -- Dialog elements
-        "VaenylaeBardAddSongDialog",
-        "VaenylaeBardAddSongDialogEditBox",
-        "VaenylaeBardAddSongDialogAddButton",
-        "VaenylaeBardAddSongDialogCancelButton",
-        
-        -- Line editor elements
-        "VaenylaeBardLineEditorFrame",
-        "VaenylaeBardLineEditorFrameCloseButton",
-        "VaenylaeBardLineEditorFrameLineTextBox",
-        "VaenylaeBardLineEditorFrameEmoteBox",
-        "VaenylaeBardLineEditorFrameDelayBox",
-        "VaenylaeBardLineEditorFrameLineScroll",
-        "VaenylaeBardLineEditorFrameLineList",
-        "VaenylaeBardLineEditorFrameSaveLineButton",
-        "VaenylaeBardLineEditorFrameClearButton"
-    }
-    
-    for _, elementName in ipairs(elements) do
-        local element = getglobal(elementName)
-        if element then
-            print("✓ " .. elementName .. " exists")
-        else
-            print("✗ " .. elementName .. " is NIL")
-        end
-    end
-    
-    -- Special check for scroll frame children
-    print("=== ScrollFrame Child Check ===")
-    local mainScroll = getglobal("VaenylaeBardMainFrameSongScroll")
-    if mainScroll then
-        local child = mainScroll:GetScrollChild()
-        print("MainFrame ScrollChild: " .. tostring(child))
-    end
-    
-    local lineScroll = getglobal("VaenylaeBardLineEditorFrameLineScroll")
-    if lineScroll then
-        local child = lineScroll:GetScrollChild()
-        print("LineEditor ScrollChild: " .. tostring(child))
-    end
-    
-    print("=== End Debug ===")
-end
+function VaenylaeBard:OnEvent()
+  if event == "ADDON_LOADED" and arg1 == "VaenylaeBard" then
 
--- Initialize addon with proper error checking
-local function InitializeAddon()
-    print("|cff00ffff[Vaenylae Bard]|r Manager loaded! Type /vbard to open.")
-    
-    -- Debug what elements exist
-    DebugUIElements()
-    
     -- Initialize saved variables
-    if not VaenylaeBardDB then
-        VaenylaeBardDB = { songs = {} }
+    if VaenylaeBardDB == nil then
+      VaenylaeBardDB = { songs = {} }
     end
     VaenylaeBardSongs = VaenylaeBardDB.songs
+
+    -- Initialize UI
+    VaenylaeBard.InitializeUI()
     
-    -- Check if main frame exists before proceeding
-    if not MainFrame then
-        print("ERROR: Main frame not found! UI loading failed.")
-        return
-    end
-    
-    -- Set up all event handlers with error checking
-    local success = pcall(SetupEventHandlers)
-    if not success then
-        print("ERROR: Failed to set up event handlers. Some UI elements may be missing.")
-        return
-    end
+    -- Create song buttons
+    VaenylaeBard.CreateSongButtons()
+    VaenylaeBard.CreateLineButtons()
     
     -- Update displays
-    UpdateSongList()
-    
-    print("Vaenylae Bard: Initialization complete!")
+    VaenylaeBard.UpdateSongList()
+
+    -- Success message (following TurtleRP style)
+    VaenylaeBard.log("|cff00ffff[Vaenylae Bard]|r Song manager loaded! Type |cff00ffff/vbard|r to open.")
+
+    -- Slash commands
+    SLASH_VBARD1 = "/vbard"
+    SLASH_VBARD2 = "/vaenylaebard"
+    SlashCmdList["VBARD"] = function(msg)
+      if msg == "debug" then
+        VaenylaeBard.DebugInfo()
+      else
+        VaenylaeBard.ToggleMainFrame()
+      end
+    end
+
+  elseif event == "PLAYER_LOGOUT" then
+    -- Save data
+    if VaenylaeBardDB then
+      VaenylaeBardDB.songs = VaenylaeBardSongs
+    end
+  end
 end
 
--- Setup all event handlers with proper error checking
-function SetupEventHandlers()
-    print("Setting up event handlers...")
-    
-    -- Main Frame Handlers (with nil checks)
-    if MainFrameCloseButton then
-        MainFrameCloseButton:SetScript("OnClick", function()
-            MainFrame:Hide()
-        end)
-        print("✓ Main frame close button handler set")
-    else
-        print("✗ MainFrameCloseButton is nil - skipping")
-    end
-    
-    if MainFrameAddSongButton then
-        MainFrameAddSongButton:SetScript("OnClick", function()
-            AddSongDialog:Show()
-            if AddSongDialogEditBox then
-                AddSongDialogEditBox:SetFocus()
-            end
-        end)
-        print("✓ Add song button handler set")
-    else
-        print("✗ MainFrameAddSongButton is nil - skipping")
-    end
-    
-    if MainFrameRemoveSongButton then
-        MainFrameRemoveSongButton:SetScript("OnClick", function()
-            if VaenylaeBardSelectedSong then
-                VaenylaeBardSongs[VaenylaeBardSelectedSong] = nil
-                VaenylaeBardSelectedSong = nil
-                UpdateSongList()
-                LineEditorFrame:Hide()
-                print("Song removed.")
-            else
-                print("No song selected to remove.")
-            end
-        end)
-        print("✓ Remove song button handler set")
-    else
-        print("✗ MainFrameRemoveSongButton is nil - skipping")
-    end
-    
-    if MainFramePlaySongButton then
-        MainFramePlaySongButton:SetScript("OnClick", function()
-            if VaenylaeBardSelectedSong then
-                PlaySong(VaenylaeBardSelectedSong)
-            else
-                print("No song selected to play.")
-            end
-        end)
-        print("✓ Play song button handler set")
-    else
-        print("✗ MainFramePlaySongButton is nil - skipping")
-    end
-    
-    -- Add Song Dialog Handlers
-    if AddSongDialogAddButton then
-        AddSongDialogAddButton:SetScript("OnClick", function()
-            local songName = AddSongDialogEditBox and AddSongDialogEditBox:GetText() or ""
-            if songName and songName ~= "" then
-                if VaenylaeBardSongs[songName] then
-                    print("Song with that name already exists!")
-                    return
-                end
-                VaenylaeBardSongs[songName] = {}
-                UpdateSongList()
-                print("Song '" .. songName .. "' added.")
-                if AddSongDialogEditBox then AddSongDialogEditBox:SetText("") end
-                AddSongDialog:Hide()
-            else
-                print("Please enter a song name.")
-            end
-        end)
-        print("✓ Add song dialog button handler set")
-    else
-        print("✗ AddSongDialogAddButton is nil - skipping")
-    end
-    
-    if AddSongDialogCancelButton then
-        AddSongDialogCancelButton:SetScript("OnClick", function()
-            if AddSongDialogEditBox then AddSongDialogEditBox:SetText("") end
-            AddSongDialog:Hide()
-        end)
-        print("✓ Cancel dialog button handler set")
-    else
-        print("✗ AddSongDialogCancelButton is nil - skipping")
-    end
-    
-    -- Enter/Escape key support for dialog
-    if AddSongDialogEditBox then
-        AddSongDialogEditBox:SetScript("OnEnterPressed", function()
-            if AddSongDialogAddButton then
-                AddSongDialogAddButton:GetScript("OnClick")()
-            end
-        end)
-        
-        AddSongDialogEditBox:SetScript("OnEscapePressed", function()
-            if AddSongDialogCancelButton then
-                AddSongDialogCancelButton:GetScript("OnClick")()
-            end
-        end)
-        print("✓ Dialog editbox key handlers set")
-    else
-        print("✗ AddSongDialogEditBox is nil - skipping key handlers")
-    end
-    
-    -- Line Editor Handlers - only set up if elements exist
-    if LineEditorCloseButton then
-        LineEditorCloseButton:SetScript("OnClick", function()
-            LineEditorFrame:Hide()
-            VaenylaeBardSelectedLine = nil
-        end)
-        print("✓ Line editor close button handler set")
-    else
-        print("✗ LineEditorCloseButton is nil - skipping")
-    end
-    
-    -- Set up other line editor handlers only if elements exist
-    if LineEditorSaveLineButton then
-        LineEditorSaveLineButton:SetScript("OnClick", SaveLine)
-        print("✓ Save line button handler set")
-    else
-        print("✗ LineEditorSaveLineButton is nil - skipping")
-    end
-    
-    -- Continue with other handlers only if they exist...
-    if LineEditorClearButton then
-        LineEditorClearButton:SetScript("OnClick", function()
-            VaenylaeBardSelectedLine = nil
-            if LineEditorLineTextBox then LineEditorLineTextBox:SetText("") end
-            if LineEditorEmoteBox then LineEditorEmoteBox:SetText("") end
-            if LineEditorDelayBox then LineEditorDelayBox:SetText("3") end
-            if LineEditorLineTextBox then LineEditorLineTextBox:SetFocus() end
-        end)
-        print("✓ Clear button handler set")
-    else
-        print("✗ LineEditorClearButton is nil - skipping")
-    end
-    
-    print("Event handler setup completed with available elements")
+VaenylaeBard_Parent:SetScript("OnEvent", VaenylaeBard.OnEvent)
+
+-----
+-- Utility functions (following TurtleRP pattern)
+-----
+function VaenylaeBard.log(message)
+  DEFAULT_CHAT_FRAME:AddMessage(message)
 end
 
--- Update song list display using ScrollFrame
-function UpdateSongList()
-    print("UpdateSongList called...")
+function VaenylaeBard.DebugInfo()
+  VaenylaeBard.log("=== Vaenylae Bard Debug Info ===")
+  local songCount = 0
+  for name, data in pairs(VaenylaeBardSongs) do
+    songCount = songCount + 1
+    VaenylaeBard.log("- " .. name .. " (" .. table.getn(data) .. " lines)")
+  end
+  VaenylaeBard.log("Total songs: " .. songCount)
+  VaenylaeBard.log("Selected song: " .. tostring(VaenylaeBard.selectedSong))
+  VaenylaeBard.log("Selected line: " .. tostring(VaenylaeBard.selectedLine))
+end
+
+-----
+-- UI Management (following TurtleRP pattern)
+-----
+function VaenylaeBard.InitializeUI()
+  -- Set up close button scripts
+  VaenylaeBardMainFrame_CloseButton:SetScript("OnClick", function()
+    VaenylaeBardMainFrame:Hide()
+  end)
+  
+  VaenylaeBardLineEditorFrame_CloseButton:SetScript("OnClick", function()
+    VaenylaeBardLineEditorFrame:Hide()
+  end)
+  
+  -- Set up main frame buttons (already defined in XML OnClick)
+  -- No additional setup needed thanks to XML event handlers
+end
+
+function VaenylaeBard.ToggleMainFrame()
+  if VaenylaeBardMainFrame:IsShown() then
+    VaenylaeBardMainFrame:Hide()
+    VaenylaeBard.log("Vaenylae Bard: Hidden")
+  else
+    VaenylaeBardMainFrame:Show()
+    VaenylaeBard.log("Vaenylae Bard: Opened")
+    VaenylaeBard.UpdateSongList()
+  end
+end
+
+-----
+-- Song Button Management (following TurtleRP DirectoryButton pattern)
+-----
+function VaenylaeBard.CreateSongButtons()
+  for i = 1, 15 do -- Create 15 buttons like TurtleRP Directory
+    local button = CreateFrame("Button", "VaenylaeBardSongButton" .. i, VaenylaeBardMainFrame_SongScrollBox, "VaenylaeBardSongButtonTemplate")
+    button:SetID(i)
     
-    -- Check if scroll frame exists, otherwise use fallback
-    local songList = nil
-    if MainFrameSongScroll then
-        print("Using ScrollFrame method...")
-        songList = MainFrameSongScroll:GetScrollChild()
-        if not songList then
-            print("ScrollFrame exists but GetScrollChild() returned nil")
-            -- Try to get the child directly by name
-            songList = getglobal("VaenylaeBardMainFrameSongScrollScrollChild") or getglobal("VaenylaeBardMainFrameSongList")
+    if i == 1 then
+      button:SetPoint("TOPLEFT", VaenylaeBardMainFrame_SongScrollBox, "TOPLEFT", 5, -5)
+    else
+      button:SetPoint("TOPLEFT", "VaenylaeBardSongButton" .. (i-1), "BOTTOMLEFT", 0, 0)
+    end
+    
+    VaenylaeBard.songButtons[i] = button
+  end
+end
+
+function VaenylaeBard.CreateLineButtons()
+  for i = 1, 15 do -- Create 15 buttons for lines
+    local button = CreateFrame("Button", "VaenylaeBardLineButton" .. i, VaenylaeBardLineEditorFrame_LineScrollBox, "VaenylaeBardLineButtonTemplate")
+    button:SetID(i)
+    
+    if i == 1 then
+      button:SetPoint("TOPLEFT", VaenylaeBardLineEditorFrame_LineScrollBox, "TOPLEFT", 5, -5)
+    else
+      button:SetPoint("TOPLEFT", "VaenylaeBardLineButton" .. (i-1), "BOTTOMLEFT", 0, 0)
+    end
+    
+    VaenylaeBard.lineButtons[i] = button
+  end
+end
+
+-----
+-- Scroll Management (following TurtleRP FauxScrollFrame pattern)
+-----
+function VaenylaeBard.SongScrollBar_Update()
+  local songs = {}
+  for name, _ in pairs(VaenylaeBardSongs) do
+    table.insert(songs, name)
+  end
+  table.sort(songs)
+  
+  local numSongs = table.getn(songs)
+  local offset = FauxScrollFrame_GetOffset(VaenylaeBardMainFrame_SongScrollBox)
+  
+  FauxScrollFrame_Update(VaenylaeBardMainFrame_SongScrollBox, numSongs, 15, 20)
+  
+  for i = 1, 15 do
+    local button = VaenylaeBard.songButtons[i]
+    local songIndex = i + offset
+    
+    if songIndex <= numSongs then
+      local songName = songs[songIndex]
+      button:SetText(songName)
+      button.songName = songName
+      button:Show()
+      
+      -- Highlight selected song
+      if songName == VaenylaeBard.selectedSong then
+        button:LockHighlight()
+      else
+        button:UnlockHighlight()
+      end
+    else
+      button:Hide()
+    end
+  end
+end
+
+function VaenylaeBard.LineScrollBar_Update()
+  if not VaenylaeBard.selectedSong then
+    -- Hide all line buttons if no song selected
+    for i = 1, 15 do
+      VaenylaeBard.lineButtons[i]:Hide()
+    end
+    return
+  end
+  
+  local lines = VaenylaeBardSongs[VaenylaeBard.selectedSong] or {}
+  local numLines = table.getn(lines)
+  local offset = FauxScrollFrame_GetOffset(VaenylaeBardLineEditorFrame_LineScrollBox)
+  
+  FauxScrollFrame_Update(VaenylaeBardLineEditorFrame_LineScrollBox, numLines, 15, 18)
+  
+  for i = 1, 15 do
+    local button = VaenylaeBard.lineButtons[i]
+    local lineIndex = i + offset
+    
+    if lineIndex <= numLines then
+      local line = lines[lineIndex]
+      local displayText = lineIndex .. ". "
+      if line.text and string.len(line.text) > 0 then
+        displayText = displayText .. string.sub(line.text, 1, 40)
+        if string.len(line.text) > 40 then
+          displayText = displayText .. "..."
         end
+      else
+        displayText = displayText .. "(empty line)"
+      end
+      
+      button:SetText(displayText)
+      button.lineIndex = lineIndex
+      button:Show()
+      
+      -- Highlight selected line
+      if lineIndex == VaenylaeBard.selectedLine then
+        button:LockHighlight()
+      else
+        button:UnlockHighlight()
+      end
     else
-        print("MainFrameSongScroll is nil - using fallback method")
-        -- Fallback: try to get the song list frame directly
-        songList = getglobal("VaenylaeBardMainFrameSongList")
+      button:Hide()
     end
-    
-    if not songList then 
-        print("ERROR: Could not find song list container at all!")
-        print("Available options:")
-        print("- MainFrameSongScroll: " .. tostring(MainFrameSongScroll))
-        print("- VaenylaeBardMainFrameSongList: " .. tostring(getglobal("VaenylaeBardMainFrameSongList")))
-        
-        -- Create a simple fallback container
-        if MainFrame then
-            print("Creating emergency fallback song list...")
-            songList = CreateFrame("Frame", "VBEmergencySongList", MainFrame)
-            songList:SetWidth(350)
-            songList:SetHeight(280)
-            songList:SetPoint("TOP", MainFrame, "TOP", 0, -45)
-            print("Emergency song list created!")
-        else
-            print("Even MainFrame is nil - cannot continue")
-            return
-        end
-    else
-        print("Song list container found successfully!")
-    end
-    
-    -- Clear existing buttons
-    local children = {songList:GetChildren()}
-    for _, child in pairs(children) do
-        child:Hide()
-    end
-    
-    -- Count songs and create buttons
-    local songCount = 0
-    local y = 0
-    local buttonHeight = 25
-    local spacing = 5
-    
-    for songName, songData in pairs(VaenylaeBardSongs) do
-        songCount = songCount + 1
-        
-        -- Create or reuse button
-        local buttonName = "VBSongButton" .. songCount
-        local btn = getglobal(buttonName) or CreateFrame("Button", buttonName, songList, "UIPanelButtonTemplate")
-        
-        btn:SetWidth(340)
-        btn:SetHeight(buttonHeight)
-        btn:SetPoint("TOP", songList, "TOP", 0, -y)
-        
-        local lineCount = songData and table.getn(songData) or 0
-        local buttonText = songName .. " (" .. lineCount .. " lines)"
-        btn:SetText(buttonText)
-        
-        -- Create click handler (avoid closure issues)
-        btn:SetScript("OnClick", CreateSongClickHandler(songName))
-        btn:Show()
-        
-        y = y + buttonHeight + spacing
-    end
-    
-    -- Update scroll frame height if it's a scroll frame
-    if songList.SetHeight then
-        songList:SetHeight(math.max(y, 300))
-    end
-    
-    print("Song list updated - " .. songCount .. " songs displayed")
+  end
 end
 
--- Create click handler for song buttons
-local function CreateSongClickHandler(capturedSongName)
-    return function()
-        VaenylaeBardSelectedSong = capturedSongName
-        LineEditorFrame:Show()
-        LineEditorTitle:SetText("Editing: " .. capturedSongName)
-        UpdateLineList()
-        print("Selected song: " .. capturedSongName)
-    end
+-----
+-- Song Management Functions
+-----
+function VaenylaeBard.SelectSong(songName)
+  VaenylaeBard.selectedSong = songName
+  VaenylaeBard.selectedLine = nil
+  VaenylaeBard.SongScrollBar_Update()
+  
+  -- Update status text
+  local songData = VaenylaeBardSongs[songName]
+  local lineCount = songData and table.getn(songData) or 0
+  VaenylaeBardMainFrame_StatusText:SetText("Selected: " .. songName .. " (" .. lineCount .. " lines)")
 end
 
--- Update line list display using ScrollFrame
-function UpdateLineList()
-    print("UpdateLineList called...")
-    
-    -- Check if line scroll frame exists, otherwise use fallback
-    local lineList = nil
-    if LineEditorLineScroll then
-        print("Using LineEditor ScrollFrame method...")
-        lineList = LineEditorLineScroll:GetScrollChild()
-        if not lineList then
-            print("LineEditor ScrollFrame exists but GetScrollChild() returned nil")
-            -- Try to get the child directly by name
-            lineList = getglobal("VaenylaeBardLineEditorFrameLineScrollScrollChild") or getglobal("VaenylaeBardLineEditorFrameLineList")
-        end
-    else
-        print("LineEditorLineScroll is nil - using fallback method")
-        -- Fallback: try to get the line list frame directly
-        lineList = getglobal("VaenylaeBardLineEditorFrameLineList")
-    end
-    
-    if not lineList then
-        print("ERROR: Could not find line list container!")
-        print("LineEditorLineScroll: " .. tostring(LineEditorLineScroll))
-        
-        -- Create a simple fallback container
-        if LineEditorFrame then
-            print("Creating emergency fallback line list...")
-            lineList = CreateFrame("Frame", "VBEmergencyLineList", LineEditorFrame)
-            lineList:SetWidth(400)
-            lineList:SetHeight(180)
-            lineList:SetPoint("TOP", LineEditorFrame, "TOP", 0, -50)
-            print("Emergency line list created!")
-        else
-            print("LineEditorFrame is nil - cannot continue")
-            return
-        end
-    else
-        print("Line list container found successfully!")
-    end
-    
-    -- Clear existing children
-    local children = {lineList:GetChildren()}
-    for _, child in pairs(children) do
-        child:Hide()
-    end
-    
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-    if not song then 
-        print("No selected song for line list")
-        return 
-    end
-    
-    local y = 0
-    local buttonHeight = 25
-    local spacing = 3
-    
-    for i, line in ipairs(song) do
-        if line and type(line) == "table" then
-            local buttonName = "VBLineButton" .. i
-            local btn = getglobal(buttonName) or CreateFrame("Button", buttonName, lineList, "UIPanelButtonTemplate")
-            
-            btn:SetWidth(380)
-            btn:SetHeight(buttonHeight)
-            btn:SetPoint("TOP", lineList, "TOP", 0, -y)
-            
-            local lineText = line.text or "Empty line"
-            local displayText = i .. ". " .. lineText
-            if string.len(displayText) > 50 then
-                displayText = string.sub(displayText, 1, 47) .. "..."
-            end
-            btn:SetText(displayText)
-            
-            -- Create click handler for line selection
-            btn:SetScript("OnClick", function()
-                SelectLine(i)
-            end)
-            
-            btn:Show()
-            y = y + buttonHeight + spacing
-        end
-    end
-    
-    -- Update scroll frame height if it supports it
-    if lineList.SetHeight then
-        lineList:SetHeight(math.max(y, 180))
-    end
-    
-    print("Line list updated - " .. table.getn(song) .. " lines processed")
+function VaenylaeBard.ShowAddSongDialog()
+  VaenylaeBardAddSongDialog:Show()
+  VaenylaeBardAddSongDialog_EditBox:SetFocus()
 end
 
--- Select a line for editing
-function SelectLine(lineIndex)
-    VaenylaeBardSelectedLine = lineIndex
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-    local line = song[lineIndex]
-    
-    if line then
-        LineEditorLineTextBox:SetText(line.text or "")
-        LineEditorEmoteBox:SetText(line.emote or "")
-        LineEditorDelayBox:SetText(tostring(line.delay or 3))
-    end
-    
-    print("Selected line " .. lineIndex .. " for editing")
+function VaenylaeBard.AddNewSong()
+  local songName = VaenylaeBardAddSongDialog_EditBox:GetText()
+  if not songName or songName == "" then
+    VaenylaeBard.log("Please enter a song name.")
+    return
+  end
+  
+  if VaenylaeBardSongs[songName] then
+    VaenylaeBard.log("A song with that name already exists.")
+    return
+  end
+  
+  VaenylaeBardSongs[songName] = {}
+  VaenylaeBardAddSongDialog_EditBox:SetText("")
+  VaenylaeBardAddSongDialog:Hide()
+  VaenylaeBard.UpdateSongList()
+  VaenylaeBard.log("Added song: " .. songName)
 end
 
--- Save line function
-function SaveLine()
-    if not VaenylaeBardSelectedSong then 
-        print("No song selected")
-        return 
-    end
-    
-    local text = LineEditorLineTextBox:GetText()
-    if not text or text == "" then
-        print("Please enter line text.")
-        LineEditorLineTextBox:SetFocus()
-        return
-    end
-    
-    local emote = LineEditorEmoteBox:GetText() or ""
-    local delay = tonumber(LineEditorDelayBox:GetText()) or 3
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-
-    if VaenylaeBardSelectedLine then
-        song[VaenylaeBardSelectedLine] = {text=text, emote=emote, delay=delay}
-        print("Line " .. VaenylaeBardSelectedLine .. " updated.")
-    else
-        table.insert(song, {text=text, emote=emote, delay=delay})
-        print("New line added.")
-    end
-    
-    -- Clear form and update displays
-    VaenylaeBardSelectedLine = nil
-    LineEditorLineTextBox:SetText("")
-    LineEditorEmoteBox:SetText("")
-    LineEditorDelayBox:SetText("3")
-    UpdateLineList()
-    UpdateSongList()
+function VaenylaeBard.RemoveSelectedSong()
+  if not VaenylaeBard.selectedSong then
+    VaenylaeBard.log("No song selected.")
+    return
+  end
+  
+  VaenylaeBardSongs[VaenylaeBard.selectedSong] = nil
+  VaenylaeBard.log("Removed song: " .. VaenylaeBard.selectedSong)
+  VaenylaeBard.selectedSong = nil
+  VaenylaeBard.selectedLine = nil
+  VaenylaeBard.UpdateSongList()
+  VaenylaeBardMainFrame_StatusText:SetText("Select a song from the list above")
 end
 
--- Move line up
-function MoveLineUp()
-    if not VaenylaeBardSelectedSong or not VaenylaeBardSelectedLine then
-        print("No line selected.")
-        return
-    end
-    
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-    local i = VaenylaeBardSelectedLine
-    
-    if i > 1 then
-        song[i], song[i-1] = song[i-1], song[i]
-        VaenylaeBardSelectedLine = i-1
-        UpdateLineList()
-        SelectLine(VaenylaeBardSelectedLine)
-        print("Line moved up.")
-    else
-        print("Line is already at the top.")
-    end
+function VaenylaeBard.UpdateSongList()
+  VaenylaeBard.SongScrollBar_Update()
 end
 
--- Move line down
-function MoveLineDown()
-    if not VaenylaeBardSelectedSong or not VaenylaeBardSelectedLine then
-        print("No line selected.")
-        return
-    end
-    
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-    local i = VaenylaeBardSelectedLine
-    
-    if i < table.getn(song) then
-        song[i], song[i+1] = song[i+1], song[i]
-        VaenylaeBardSelectedLine = i+1
-        UpdateLineList()
-        SelectLine(VaenylaeBardSelectedLine)
-        print("Line moved down.")
-    else
-        print("Line is already at the bottom.")
-    end
+function VaenylaeBard.OpenLineEditor()
+  if not VaenylaeBard.selectedSong then
+    VaenylaeBard.log("Please select a song first.")
+    return
+  end
+  
+  VaenylaeBardLineEditorFrame:Show()
+  VaenylaeBardLineEditorFrame_Title:SetText("Editing: " .. VaenylaeBard.selectedSong)
+  VaenylaeBard.LineScrollBar_Update()
 end
 
--- Delete line
-function DeleteLine()
-    if not VaenylaeBardSelectedSong or not VaenylaeBardSelectedLine then
-        print("No line selected.")
-        return
-    end
-    
-    local song = VaenylaeBardSongs[VaenylaeBardSelectedSong]
-    local i = VaenylaeBardSelectedLine
-    
-    table.remove(song, i)
-    VaenylaeBardSelectedLine = nil
-    LineEditorLineTextBox:SetText("")
-    LineEditorEmoteBox:SetText("")
-    LineEditorDelayBox:SetText("3")
-    UpdateLineList()
-    UpdateSongList()
-    print("Line deleted.")
+function VaenylaeBard.PlaySelectedSong()
+  if not VaenylaeBard.selectedSong then
+    VaenylaeBard.log("Please select a song first.")
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  if not song or table.getn(song) == 0 then
+    VaenylaeBard.log("Song is empty.")
+    return
+  end
+  
+  VaenylaeBard.log("Playing song: " .. VaenylaeBard.selectedSong)
+  VaenylaeBard.PlaySongLines(song, 1)
 end
 
--- Play song function (basic implementation)
-function PlaySong(songName)
-    local song = VaenylaeBardSongs[songName]
-    if not song or table.getn(song) == 0 then
-        print("Song is empty or doesn't exist.")
-        return
-    end
-    
-    print("Playing song: " .. songName)
-    PlaySongLines(song, 1)
+-----
+-- Line Management Functions
+-----
+function VaenylaeBard.SelectLine(lineIndex)
+  VaenylaeBard.selectedLine = lineIndex
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.LoadLineIntoEditor(lineIndex)
 end
 
--- Recursive function to play song lines with delays
-function PlaySongLines(song, lineIndex)
-    if lineIndex > table.getn(song) then
-        print("Song finished.")
-        return
-    end
-    
-    local line = song[lineIndex]
-    if not line then
-        return
-    end
-    
-    -- Send the line text
-    if line.text and line.text ~= "" then
-        SendChatMessage(line.text, "SAY")
-    end
-    
-    -- Do emote if specified
-    if line.emote and line.emote ~= "" then
-        DoEmote(line.emote)
-    end
-    
-    -- Schedule next line
-    local delay = line.delay or 3
-    local timer = CreateFrame("Frame")
-    local timeElapsed = 0
-    timer:SetScript("OnUpdate", function()
-        timeElapsed = timeElapsed + arg1
-        if timeElapsed >= delay then
-            timer:SetScript("OnUpdate", nil)
-            PlaySongLines(song, lineIndex + 1)
-        end
-    end)
+function VaenylaeBard.LoadLineIntoEditor(lineIndex)
+  if not VaenylaeBard.selectedSong or not lineIndex then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  if not song or not song[lineIndex] then
+    VaenylaeBard.ClearEditFields()
+    return
+  end
+  
+  local line = song[lineIndex]
+  VaenylaeBardLineEditorFrame_EditSection_LineTextScrollBox_LineTextInput:SetText(line.text or "")
+  VaenylaeBardLineEditorFrame_EditSection_EmoteInput:SetText(line.emote or "")
+  VaenylaeBardLineEditorFrame_EditSection_DelayInput:SetText(tostring(line.delay or 3))
 end
 
--- Event handling for addon loading
-local eventFrame = CreateFrame("Frame")
-eventFrame:RegisterEvent("ADDON_LOADED")
-eventFrame:RegisterEvent("PLAYER_LOGOUT")
-eventFrame:SetScript("OnEvent", function()
-    if event == "ADDON_LOADED" and arg1 == "VaenylaeBard" then
-        InitializeAddon()
-    elseif event == "PLAYER_LOGOUT" then
-        if VaenylaeBardDB then
-            VaenylaeBardDB.songs = VaenylaeBardSongs
-        end
-    end
-end)
-
--- Slash commands
-SLASH_VBARD1 = "/vbard"
-SLASH_VBARD2 = "/vaenylaebard"
-SlashCmdList["VBARD"] = function(msg)
-    if msg == "debug" then
-        print("=== VaenylaeBard Debug Info ===")
-        DebugUIElements()
-        local count = 0
-        for name, data in pairs(VaenylaeBardSongs) do
-            count = count + 1
-            print("- " .. name .. " (" .. table.getn(data) .. " lines)")
-        end
-        print("Total songs: " .. count)
-        print("Selected song: " .. tostring(VaenylaeBardSelectedSong))
-        print("Selected line: " .. tostring(VaenylaeBardSelectedLine))
-        return
-    end
-    
-    -- Toggle main window
-    if MainFrame and MainFrame:IsShown() then
-        MainFrame:Hide()
-        print("Vaenylae Bard: Hidden")
-    elseif MainFrame then
-        MainFrame:Show()
-        print("Vaenylae Bard: Opened")
-    else
-        print("ERROR: Main frame not found!")
-    end
+function VaenylaeBard.AddNewLine()
+  if not VaenylaeBard.selectedSong then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  table.insert(song, {
+    text = "",
+    emote = "",
+    delay = 3
+  })
+  
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.log("Added new line to " .. VaenylaeBard.selectedSong)
 end
 
-print("VaenylaeBard: XML-based version loaded! Type /vbard to open.")
+function VaenylaeBard.SaveCurrentLine()
+  if not VaenylaeBard.selectedSong or not VaenylaeBard.selectedLine then
+    VaenylaeBard.log("Please select a line first.")
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  if not song[VaenylaeBard.selectedLine] then
+    VaenylaeBard.log("Invalid line selected.")
+    return
+  end
+  
+  local lineText = VaenylaeBardLineEditorFrame_EditSection_LineTextScrollBox_LineTextInput:GetText()
+  local emote = VaenylaeBardLineEditorFrame_EditSection_EmoteInput:GetText()
+  local delayText = VaenylaeBardLineEditorFrame_EditSection_DelayInput:GetText()
+  local delay = tonumber(delayText) or 3
+  
+  song[VaenylaeBard.selectedLine] = {
+    text = lineText,
+    emote = emote,
+    delay = delay
+  }
+  
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.log("Line saved.")
+end
+
+function VaenylaeBard.ClearEditFields()
+  VaenylaeBardLineEditorFrame_EditSection_LineTextScrollBox_LineTextInput:SetText("")
+  VaenylaeBardLineEditorFrame_EditSection_EmoteInput:SetText("")
+  VaenylaeBardLineEditorFrame_EditSection_DelayInput:SetText("3")
+end
+
+function VaenylaeBard.MoveLineUp()
+  if not VaenylaeBard.selectedSong or not VaenylaeBard.selectedLine or VaenylaeBard.selectedLine <= 1 then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  local temp = song[VaenylaeBard.selectedLine]
+  song[VaenylaeBard.selectedLine] = song[VaenylaeBard.selectedLine - 1]
+  song[VaenylaeBard.selectedLine - 1] = temp
+  
+  VaenylaeBard.selectedLine = VaenylaeBard.selectedLine - 1
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.LoadLineIntoEditor(VaenylaeBard.selectedLine)
+end
+
+function VaenylaeBard.MoveLineDown()
+  if not VaenylaeBard.selectedSong or not VaenylaeBard.selectedLine then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  if VaenylaeBard.selectedLine >= table.getn(song) then
+    return
+  end
+  
+  local temp = song[VaenylaeBard.selectedLine]
+  song[VaenylaeBard.selectedLine] = song[VaenylaeBard.selectedLine + 1]
+  song[VaenylaeBard.selectedLine + 1] = temp
+  
+  VaenylaeBard.selectedLine = VaenylaeBard.selectedLine + 1
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.LoadLineIntoEditor(VaenylaeBard.selectedLine)
+end
+
+function VaenylaeBard.DeleteSelectedLine()
+  if not VaenylaeBard.selectedSong or not VaenylaeBard.selectedLine then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  table.remove(song, VaenylaeBard.selectedLine)
+  
+  VaenylaeBard.selectedLine = nil
+  VaenylaeBard.LineScrollBar_Update()
+  VaenylaeBard.ClearEditFields()
+  VaenylaeBard.log("Line deleted.")
+end
+
+function VaenylaeBard.PreviewSelectedLine()
+  if not VaenylaeBard.selectedSong or not VaenylaeBard.selectedLine then
+    return
+  end
+  
+  local song = VaenylaeBardSongs[VaenylaeBard.selectedSong]
+  local line = song[VaenylaeBard.selectedLine]
+  if not line then
+    return
+  end
+  
+  if line.text and line.text ~= "" then
+    SendChatMessage(line.text, "SAY")
+  end
+  
+  if line.emote and line.emote ~= "" then
+    DoEmote(line.emote)
+  end
+  
+  VaenylaeBard.log("Previewed line " .. VaenylaeBard.selectedLine)
+end
+
+-----
+-- Song Playback (following your existing pattern)
+-----
+function VaenylaeBard.PlaySongLines(song, lineIndex)
+  if VaenylaeBard.isPlaying then
+    VaenylaeBard.log("A song is already playing. Please wait.")
+    return
+  end
+  
+  if lineIndex > table.getn(song) then
+    VaenylaeBard.log("Song finished.")
+    VaenylaeBard.isPlaying = nil
+    return
+  end
+  
+  VaenylaeBard.isPlaying = true
+  local line = song[lineIndex]
+  if not line then
+    VaenylaeBard.isPlaying = nil
+    return
+  end
+  
+  -- Send the line text
+  if line.text and line.text ~= "" then
+    SendChatMessage(line.text, "SAY")
+  end
+  
+  -- Do emote if specified
+  if line.emote and line.emote ~= "" then
+    DoEmote(line.emote)
+  end
+  
+  -- Schedule next line (following your existing timer pattern)
+  local delay = line.delay or 3
+  local timer = CreateFrame("Frame")
+  local timeElapsed = 0
+  timer:SetScript("OnUpdate", function()
+    timeElapsed = timeElapsed + arg1
+    if timeElapsed >= delay then
+      timer:SetScript("OnUpdate", nil)
+      VaenylaeBard.isPlaying = nil
+      VaenylaeBard.PlaySongLines(song, lineIndex + 1)
+    end
+  end)
+end
+
+VaenylaeBard.log("|cff00ffff[Vaenylae Bard]|r Addon loaded successfully!")
