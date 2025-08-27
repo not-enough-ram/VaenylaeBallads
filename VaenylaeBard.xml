@@ -309,15 +309,10 @@
         <Anchors>
           <Anchor point="TOPRIGHT">
             <Offset>
-              <AbsDimension x="-10" y="-10"/>
+              <AbsDimension x="-8" y="-8"/>
             </Offset>
           </Anchor>
         </Anchors>
-        <Scripts>
-          <OnClick>
-            VaenylaeBardAddSongDialog:Hide()
-          </OnClick>
-        </Scripts>
       </Button>
 
       <!-- Title -->
@@ -331,23 +326,35 @@
         </Anchors>
       </FontString>
 
-      <!-- Song name input -->
-      <EditBox name="$parent_EditBox" maxLetters="50" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false">
+      <!-- Label for input -->
+      <FontString name="$parent_Label" inherits="GameFontNormal" text="Song Name:">
+        <Anchors>
+          <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
+            <Offset>
+              <AbsDimension x="0" y="-15"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </FontString>
+
+      <!-- Song name input (following TurtleRP pattern) -->
+      <EditBox name="$parent_EditBox" alpha="0.85" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false" maxLetters="50">
         <Size>
           <AbsDimension x="250" y="20"/>
         </Size>
         <Anchors>
-          <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
+          <Anchor point="TOP" relativeTo="$parent_Label" relativePoint="BOTTOM">
             <Offset>
-              <AbsDimension x="0" y="-20"/>
+              <AbsDimension x="0" y="-10"/>
             </Offset>
           </Anchor>
         </Anchors>
         <FontString inherits="ChatFontNormal"/>
         <Scripts>
-          <OnEnterPressed>
-            VaenylaeBard.AddNewSong()
-          </OnEnterPressed>
+          <OnLoad>
+            this:SetMaxLetters(50);
+            this:SetAutoFocus(false);
+          </OnLoad>
         </Scripts>
       </EditBox>
 
@@ -367,9 +374,6 @@
           <OnLoad>
             this:SetFont("Fonts\\FRIZQT__.ttf", 10)
           </OnLoad>
-          <OnClick>
-            VaenylaeBard.AddNewSong()
-          </OnClick>
         </Scripts>
       </Button>
 
@@ -389,9 +393,6 @@
           <OnLoad>
             this:SetFont("Fonts\\FRIZQT__.ttf", 10)
           </OnLoad>
-          <OnClick>
-            VaenylaeBardAddSongDialog:Hide()
-          </OnClick>
         </Scripts>
       </Button>
     </Frames>
@@ -711,7 +712,7 @@
             </Scripts>
             <ScrollChild>
               <!-- Line Text Input Box -->
-              <EditBox name="$parent_LineTextInput" visible="true" enableMouse="true" autoFocus="false">
+              <EditBox name="$parent_LineTextInput" alpha="0.85" visible="true" enableMouse="true" autoFocus="false">
                 <Size>
                   <AbsDimension x="380" y="2000"/>
                 </Size>
