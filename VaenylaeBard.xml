@@ -68,10 +68,10 @@
     <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
   </Button>
 
-  <!-- Main Bard Manager Frame (following TurtleRP_AdminSB pattern) -->
+  <!-- Main Bard Manager Frame (following TurtleRP backdrop pattern) -->
   <Frame name="VaenylaeBardMainFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
     <Size>
-      <AbsDimension x="384" y="512"/>
+      <AbsDimension x="400" y="500"/>
     </Size>
     <Anchors>
       <Anchor point="CENTER">
@@ -80,103 +80,49 @@
         </Offset>
       </Anchor>
     </Anchors>
-    <HitRectInsets>
-      <AbsInset left="0" right="30" top="0" bottom="45"/>
-    </HitRectInsets>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
     <Layers>
-      <Layer level="BACKGROUND">
-        <Texture file="Interface\SpellBook\SpellBook-Page-1">
-          <Size>
-            <AbsDimension x="256" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="TOPLEFT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-2">
-          <Size>
-            <AbsDimension x="128" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="TOPRIGHT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-1">
-          <Size>
-            <AbsDimension x="256" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="BOTTOMLEFT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-2">
-          <Size>
-            <AbsDimension x="128" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="BOTTOMRIGHT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-      </Layer>
       <Layer level="OVERLAY">
         <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Vaenylae Bard">
           <Anchors>
-            <Anchor point="TOPLEFT">
+            <Anchor point="TOP">
               <Offset>
-                <AbsDimension x="65" y="-40"/>
+                <AbsDimension x="0" y="-25"/>
               </Offset>
             </Anchor>
           </Anchors>
         </FontString>
         <Texture name="$parent_Icon" file="Interface\Icons\INV_Misc_Drum_01">
           <Size>
-            <AbsDimension x="30" y="30"/>
+            <AbsDimension x="24" y="24"/>
           </Size>
           <Anchors>
-            <Anchor point="TOPLEFT">
+            <Anchor point="RIGHT" relativeTo="$parent_Title" relativePoint="LEFT">
               <Offset>
-                <AbsDimension x="30" y="-33"/>
+                <AbsDimension x="-5" y="0"/>
               </Offset>
             </Anchor>
           </Anchors>
         </Texture>
       </Layer>
     </Layers>
-    <Scripts>
-      <OnLoad>
-        if ShaguTweaks_config and ShaguTweaks_config["Darkened UI"] and ShaguTweaks_config["Darkened UI"] == 1 then
-          this.Material = this.Material or this:CreateTexture(nil, "OVERLAY")
-          this.Material:SetTexture("Interface\\Stationery\\StationeryTest1")
-          this.Material:SetWidth(325)
-          this.Material:SetHeight(355)
-          this.Material:SetPoint("TOPLEFT", this, 17, -74)
-          this.Material:SetVertexColor(.8, .8, .8)
-        end
-      </OnLoad>
-    </Scripts>
     <Frames>
       <!-- Close Button -->
       <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
         <Anchors>
           <Anchor point="TOPRIGHT">
             <Offset>
-              <AbsDimension x="-27" y="-14"/>
+              <AbsDimension x="-8" y="-8"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -185,17 +131,12 @@
       <!-- Song List ScrollFrame (following TurtleRP pattern) -->
       <ScrollFrame name="$parent_SongScrollBox" inherits="FauxScrollFrameTemplate">
         <Size>
-          <AbsDimension x="350" y="280"/>
+          <AbsDimension x="360" y="320"/>
         </Size>
         <Anchors>
-          <Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+          <Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
             <Offset>
-              <AbsDimension x="20" y="-80"/>
-            </Offset>
-          </Anchor>
-          <Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
-            <Offset>
-              <AbsDimension x="-35" y="120"/>
+              <AbsDimension x="0" y="-60"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -224,7 +165,7 @@
         <Anchors>
           <Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
             <Offset>
-              <AbsDimension x="30" y="60"/>
+              <AbsDimension x="25" y="50"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -306,7 +247,7 @@
         <Anchors>
           <Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
             <Offset>
-              <AbsDimension x="0" y="30"/>
+              <AbsDimension x="0" y="20"/>
             </Offset>
           </Anchor>
         </Anchors>
@@ -434,7 +375,7 @@
     </Frames>
   </Frame>
 
-  <!-- Line Editor Frame (following TurtleRP_CharacterDetails pattern) -->
+  <!-- Line Editor Frame (following TurtleRP backdrop pattern) -->
   <Frame name="VaenylaeBardLineEditorFrame" toplevel="true" parent="UIParent" enableMouse="true" hidden="true">
     <Size>
       <AbsDimension x="500" y="600"/>
@@ -446,96 +387,42 @@
         </Offset>
       </Anchor>
     </Anchors>
-    <HitRectInsets>
-      <AbsInset left="0" right="30" top="0" bottom="45"/>
-    </HitRectInsets>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
     <Layers>
-      <Layer level="BACKGROUND">
-        <Texture file="Interface\SpellBook\SpellBook-Page-1">
-          <Size>
-            <AbsDimension x="256" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="TOPLEFT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-2">
-          <Size>
-            <AbsDimension x="244" y="256"/>
-          </Size>
-          <Anchors>
-            <Anchor point="TOPRIGHT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-1">
-          <Size>
-            <AbsDimension x="256" y="344"/>
-          </Size>
-          <Anchors>
-            <Anchor point="BOTTOMLEFT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-        <Texture file="Interface\SpellBook\SpellBook-Page-2">
-          <Size>
-            <AbsDimension x="244" y="344"/>
-          </Size>
-          <Anchors>
-            <Anchor point="BOTTOMRIGHT">
-              <Offset>
-                <AbsDimension x="0" y="0"/>
-              </Offset>
-            </Anchor>
-          </Anchors>
-        </Texture>
-      </Layer>
       <Layer level="OVERLAY">
         <FontString name="$parent_Title" inherits="GameFontNormalLarge" text="Song Line Editor">
           <Anchors>
-            <Anchor point="TOPLEFT">
+            <Anchor point="TOP">
               <Offset>
-                <AbsDimension x="65" y="-40"/>
+                <AbsDimension x="0" y="-25"/>
               </Offset>
             </Anchor>
           </Anchors>
         </FontString>
         <Texture name="$parent_Icon" file="Interface\Icons\INV_Misc_Note_01">
           <Size>
-            <AbsDimension x="30" y="30"/>
+            <AbsDimension x="24" y="24"/>
           </Size>
           <Anchors>
-            <Anchor point="TOPLEFT">
+            <Anchor point="RIGHT" relativeTo="$parent_Title" relativePoint="LEFT">
               <Offset>
-                <AbsDimension x="30" y="-33"/>
+                <AbsDimension x="-5" y="0"/>
               </Offset>
             </Anchor>
           </Anchors>
         </Texture>
       </Layer>
     </Layers>
-    <Scripts>
-      <OnLoad>
-        if ShaguTweaks_config and ShaguTweaks_config["Darkened UI"] and ShaguTweaks_config["Darkened UI"] == 1 then
-          this.Material = this.Material or this:CreateTexture(nil, "OVERLAY")
-          this.Material:SetTexture("Interface\\Stationery\\StationeryTest1")
-          this.Material:SetWidth(440)
-          this.Material:SetHeight(540)
-          this.Material:SetPoint("TOPLEFT", this, 17, -74)
-          this.Material:SetVertexColor(.8, .8, .8)
-        end
-      </OnLoad>
-    </Scripts>
     <Frames>
       <!-- Close Button -->
       <Button name="$parent_CloseButton" inherits="UIPanelCloseButton">
