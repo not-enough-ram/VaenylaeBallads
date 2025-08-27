@@ -315,86 +315,107 @@
         </Anchors>
       </Button>
 
-      <!-- Title -->
-      <FontString name="$parent_Title" inherits="GameFontNormal" text="Add New Song">
+      <!-- Content Frame (following TurtleRP pattern) -->
+      <Frame name="$parent_Content">
         <Anchors>
-          <Anchor point="TOP">
+          <Anchor point="TOPLEFT">
             <Offset>
-              <AbsDimension x="0" y="-25"/>
+              <AbsDimension x="15" y="-15"/>
             </Offset>
           </Anchor>
-        </Anchors>
-      </FontString>
-
-      <!-- Label for input -->
-      <FontString name="$parent_Label" inherits="GameFontNormal" text="Song Name:">
-        <Anchors>
-          <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
-            <Offset>
-              <AbsDimension x="0" y="-15"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-      </FontString>
-
-      <!-- Song name input (following TurtleRP pattern) -->
-      <EditBox name="$parent_EditBox" alpha="0.85" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false" maxLetters="50">
-        <Size>
-          <AbsDimension x="250" y="20"/>
-        </Size>
-        <Anchors>
-          <Anchor point="TOP" relativeTo="$parent_Label" relativePoint="BOTTOM">
-            <Offset>
-              <AbsDimension x="0" y="-10"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <FontString inherits="ChatFontNormal"/>
-        <Scripts>
-          <OnLoad>
-            this:SetMaxLetters(50);
-            this:SetAutoFocus(false);
-          </OnLoad>
-        </Scripts>
-      </EditBox>
-
-      <!-- Add button -->
-      <Button name="$parent_AddButton" inherits="UIPanelButtonGrayTemplate" text="Add Song">
-        <Size>
-          <AbsDimension x="80" y="25"/>
-        </Size>
-        <Anchors>
-          <Anchor point="BOTTOMLEFT">
-            <Offset>
-              <AbsDimension x="50" y="20"/>
-            </Offset>
-          </Anchor>
-        </Anchors>
-        <Scripts>
-          <OnLoad>
-            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
-          </OnLoad>
-        </Scripts>
-      </Button>
-
-      <!-- Cancel button -->
-      <Button name="$parent_CancelButton" inherits="UIPanelButtonGrayTemplate" text="Cancel">
-        <Size>
-          <AbsDimension x="80" y="25"/>
-        </Size>
-        <Anchors>
           <Anchor point="BOTTOMRIGHT">
             <Offset>
-              <AbsDimension x="-50" y="20"/>
+              <AbsDimension x="-15" y="15"/>
             </Offset>
           </Anchor>
         </Anchors>
-        <Scripts>
-          <OnLoad>
-            this:SetFont("Fonts\\FRIZQT__.ttf", 10)
-          </OnLoad>
-        </Scripts>
-      </Button>
+        <Layers>
+          <Layer level="OVERLAY">
+            <!-- Title -->
+            <FontString name="$parent_Title" inherits="GameFontNormal" text="Add New Song">
+              <Anchors>
+                <Anchor point="TOP">
+                  <Offset>
+                    <AbsDimension x="0" y="-15"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+
+            <!-- Label for input -->
+            <FontString name="$parent_Label" inherits="GameFontNormal" text="Song Name:">
+              <Anchors>
+                <Anchor point="TOP" relativeTo="$parent_Title" relativePoint="BOTTOM">
+                  <Offset>
+                    <AbsDimension x="0" y="-15"/>
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Frames>
+          <!-- Song name input (following TurtleRP pattern exactly) -->
+          <EditBox name="$parent_EditBox" alpha="1.0" inherits="InputBoxTemplate" visible="true" enableMouse="true" autoFocus="false">
+            <Size>
+              <AbsDimension x="220" y="20"/>
+            </Size>
+            <Anchors>
+              <Anchor point="TOP" relativeTo="$parent_Label" relativePoint="BOTTOM">
+                <Offset>
+                  <AbsDimension x="0" y="-5"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <FontString inherits="ChatFontNormal"/>
+            <Scripts>
+              <OnLoad>
+                this:SetMaxLetters(50)
+                this:Show()
+                this:SetAlpha(1.0)
+              </OnLoad>
+            </Scripts>
+          </EditBox>
+
+          <!-- Add button -->
+          <Button name="$parent_AddButton" inherits="UIPanelButtonGrayTemplate" text="Add Song">
+            <Size>
+              <AbsDimension x="80" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="BOTTOMLEFT">
+                <Offset>
+                  <AbsDimension x="35" y="10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+              </OnLoad>
+            </Scripts>
+          </Button>
+
+          <!-- Cancel button -->
+          <Button name="$parent_CancelButton" inherits="UIPanelButtonGrayTemplate" text="Cancel">
+            <Size>
+              <AbsDimension x="80" y="25"/>
+            </Size>
+            <Anchors>
+              <Anchor point="BOTTOMRIGHT">
+                <Offset>
+                  <AbsDimension x="-35" y="10"/>
+                </Offset>
+              </Anchor>
+            </Anchors>
+            <Scripts>
+              <OnLoad>
+                this:SetFont("Fonts\\FRIZQT__.ttf", 10)
+              </OnLoad>
+            </Scripts>
+          </Button>
+        </Frames>
+      </Frame>
     </Frames>
   </Frame>
 
@@ -712,7 +733,7 @@
             </Scripts>
             <ScrollChild>
               <!-- Line Text Input Box -->
-              <EditBox name="$parent_LineTextInput" alpha="0.85" visible="true" enableMouse="true" autoFocus="false">
+              <EditBox name="$parent_LineTextInput" visible="true" enableMouse="true" autoFocus="false">
                 <Size>
                   <AbsDimension x="380" y="2000"/>
                 </Size>

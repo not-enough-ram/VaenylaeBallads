@@ -54,6 +54,8 @@ function VaenylaeBard:OnEvent()
     SlashCmdList["VBARD"] = function(msg)
       if msg == "debug" then
         VaenylaeBard.DebugInfo()
+      elseif msg == "debugdialog" then
+        VaenylaeBard.ShowAddSongDialog()
       else
         VaenylaeBard.ToggleMainFrame()
       end
@@ -109,17 +111,17 @@ function VaenylaeBard.InitializeUI()
   end)
   
   -- Set up add song dialog cancel button  
-  VaenylaeBardAddSongDialog_CancelButton:SetScript("OnClick", function()
+  VaenylaeBardAddSongDialog_Content_CancelButton:SetScript("OnClick", function()
     VaenylaeBardAddSongDialog:Hide()
   end)
   
   -- Set up add song dialog add button
-  VaenylaeBardAddSongDialog_AddButton:SetScript("OnClick", function()
+  VaenylaeBardAddSongDialog_Content_AddButton:SetScript("OnClick", function()
     VaenylaeBard.AddNewSong()
   end)
   
   -- Set up enter key on add song editbox
-  VaenylaeBardAddSongDialog_EditBox:SetScript("OnEnterPressed", function()
+  VaenylaeBardAddSongDialog_Content_EditBox:SetScript("OnEnterPressed", function()
     VaenylaeBard.AddNewSong()
   end)
   
@@ -269,13 +271,54 @@ function VaenylaeBard.SelectSong(songName)
 end
 
 function VaenylaeBard.ShowAddSongDialog()
-  VaenylaeBardAddSongDialog_EditBox:SetText("")
+  VaenylaeBard.log("=== Add Song Dialog Debug ===")
+  
+  -- Debug: Check if dialog exists
+  if VaenylaeBardAddSongDialog then
+    VaenylaeBard.log("✓ Dialog frame exists")
+  else
+    VaenylaeBard.log("✗ Dialog frame is NIL")
+    return
+  end
+  
+  -- Debug: Check if content frame exists  
+  local contentFrame = getglobal("VaenylaeBardAddSongDialog_Content")
+  if contentFrame then
+    VaenylaeBard.log("✓ Content frame exists")
+  else
+    VaenylaeBard.log("✗ Content frame is NIL")
+  end
+  
+  -- Debug: Check if editbox exists
+  local editBox = getglobal("VaenylaeBardAddSongDialog_Content_EditBox")
+  if editBox then
+    VaenylaeBard.log("✓ EditBox exists")
+    VaenylaeBard.log("EditBox visible: " .. tostring(editBox:IsVisible()))
+    VaenylaeBard.log("EditBox shown: " .. tostring(editBox:IsShown()))
+    VaenylaeBard.log("EditBox size: " .. editBox:GetWidth() .. "x" .. editBox:GetHeight())
+    VaenylaeBard.log("EditBox alpha: " .. editBox:GetAlpha())
+    
+    -- Force show and set alpha
+    editBox:Show()
+    editBox:SetAlpha(1.0)
+    VaenylaeBard.log("After force show - visible: " .. tostring(editBox:IsVisible()))
+  else
+    VaenylaeBard.log("✗ EditBox is NIL")
+  end
+  
+  -- Try to show dialog and set focus
   VaenylaeBardAddSongDialog:Show()
-  VaenylaeBardAddSongDialog_EditBox:SetFocus()
+  
+  if editBox then
+    editBox:SetText("")
+    editBox:SetFocus()
+  end
+  
+  VaenylaeBard.log("=== End Debug ===")
 end
 
 function VaenylaeBard.AddNewSong()
-  local songName = VaenylaeBardAddSongDialog_EditBox:GetText()
+  local songName = VaenylaeBardAddSongDialog_Content_EditBox:GetText()
   if not songName or songName == "" then
     VaenylaeBard.log("Please enter a song name.")
     return
@@ -287,7 +330,7 @@ function VaenylaeBard.AddNewSong()
   end
   
   VaenylaeBardSongs[songName] = {}
-  VaenylaeBardAddSongDialog_EditBox:SetText("")
+  VaenylaeBardAddSongDialog_Content_EditBox:SetText("")
   VaenylaeBardAddSongDialog:Hide()
   VaenylaeBard.UpdateSongList()
   VaenylaeBard.log("Added song: " .. songName)
